@@ -33,12 +33,11 @@ export default function AdminPage() {
   const loadImages = useCallback(async () => {
     setLoading(true);
     const fromServer: ImageMap = {};
-    await Promise.all(
-      CATEGORIES.map(async (cat) => {
-        const res = await fetch(`/api/images?category=${cat}`);
-        fromServer[cat] = await res.json();
-      })
-    );
+    const res = await fetch("/images/manifest.json");
+    const manifest = await res.json();
+    for (const cat of CATEGORIES) {
+      fromServer[cat] = manifest[cat] || [];
+    }
     // Merge with saved order: keep saved order, append any new images not in saved
     const savedOrder = loadOrder();
     const merged: ImageMap = {};
