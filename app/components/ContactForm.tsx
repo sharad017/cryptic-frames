@@ -25,7 +25,7 @@ export default function ContactForm() {
       // Formspree — free, no account needed for setup, just replace YOUR_FORM_ID
       // Get ID: go to formspree.io → New Form → name it "cryptic.frames" → copy the ID from the endpoint URL
       // e.g. https://formspree.io/f/xpwzgkdo → ID is xpwzgkdo
-      const res = await fetch("https://formspree.io/f/YOUR_FORM_ID", {
+      const res = await fetch("https://formspree.io/f/mgodpznv", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
