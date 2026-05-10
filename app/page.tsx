@@ -104,7 +104,6 @@ export default function Home() {
               <div className="overflow-hidden rounded-2xl" style={{ aspectRatio: "4/5", maxWidth: "280px", background: "#0d0d0d", border: "1px solid var(--border)" }}>
                 <img src="/images/about.jpg" alt="Sharad Rajput"
                   className="w-full h-full object-cover"
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
                 />
               </div>
             </div>
