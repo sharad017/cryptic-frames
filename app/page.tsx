@@ -7,6 +7,7 @@ import ContactForm from "./components/ContactForm";
 import Marquee from "./components/Marquee";
 import CustomCursor from "./components/CustomCursor";
 import HeroSlideshow from "./components/HeroSlideshow";
+import CategoryGrid from "./components/CategoryGrid";
 import HeroText from "./components/HeroText";
 import PitchSection from "./components/PitchSection";
 import Footer from "./components/Footer";
@@ -20,12 +21,15 @@ const CATEGORIES = [
   { slug: "street",   label: "Street",    desc: "Life between the lines" },
 ];
 
-function getImages(folder: string): string[] {
+function getManifest(): Record<string, string[]> {
   try {
-    return fs
-      .readdirSync(path.join(process.cwd(), "public/images", folder))
-      .filter((f) => /\.(jpg|jpeg|png|webp)$/i.test(f));
-  } catch { return []; }
+    const p = path.join(process.cwd(), "public/images/manifest.json");
+    return JSON.parse(fs.readFileSync(p, "utf-8"));
+  } catch { return {}; }
+}
+
+function getImages(folder: string): string[] {
+  return getManifest()[folder] || [];
 }
 
 export default function Home() {
@@ -80,48 +84,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {categories.map((cat, i) => (
-            <Link href={`/gallery/${cat.slug}`} key={cat.slug}>
-              <div
-                className={`reveal reveal-delay-${i + 1} relative overflow-hidden rounded-2xl group cursor-pointer`}
-                style={{ height: "clamp(240px, 30vw, 380px)", background: "#0c0c0c", border: "1px solid var(--border)" }}
-              >
-                {cat.preview ? (
-                  <img src={cat.preview} alt={cat.label}
-                    className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105"
-                    style={{ opacity: 0.52, filter: "saturate(0.8)", willChange: "transform" }} />
-                ) : (
-                  <div className="absolute inset-0" style={{ background: "#0c0c0c" }} />
-                )}
-                <div className="absolute inset-0 transition-opacity duration-500 group-hover:opacity-60"
-                  style={{ background: "linear-gradient(to top, rgba(6,6,6,0.93) 0%, rgba(6,6,6,0.25) 55%, transparent 100%)" }} />
-                <div className="absolute top-5 right-5 text-[10px] tracking-[0.3em] tabular-nums opacity-35 group-hover:opacity-75 transition-opacity"
-                  style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
-                  {String(i + 1).padStart(2, "0")}
-                </div>
-                <div className="absolute bottom-0 left-0 p-6 md:p-7">
-                  <h3 className="font-light text-white mb-1 transition-colors duration-300 group-hover:text-[#b8966a]"
-                    style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)" }}>
-                    {cat.label}
-                  </h3>
-                  <p className="text-[11px] tracking-wider mb-1"
-                    style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>{cat.desc}</p>
-                  {cat.count > 0 && (
-                    <p className="text-[10px] tracking-[0.3em]"
-                      style={{ color: "var(--accent)", fontFamily: "var(--font-body)", opacity: 0.65 }}>
-                      {cat.count} frames
-                    </p>
-                  )}
-                </div>
-                <div className="absolute top-5 left-5 w-8 h-8 rounded-full border flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
-                  style={{ borderColor: "var(--accent)" }}>
-                  <span style={{ color: "var(--accent)", fontSize: "0.65rem" }}>↗</span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <CategoryGrid categories={categories} />
       </section>
 
 
@@ -133,10 +96,17 @@ export default function Home() {
             <div className="reveal">
               <p className="text-[10px] tracking-[0.5em] uppercase mb-4"
                 style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>The Photographer</p>
-              <h2 className="font-light leading-[0.92]"
+              <h2 className="font-light leading-[0.92] mb-8"
                 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(3rem, 6vw, 5.5rem)" }}>
                 Sharad<br /><em>Rajput</em>
               </h2>
+              {/* About photo — add a photo of yourself named about.jpg to public/images/ */}
+              <div className="overflow-hidden rounded-2xl" style={{ aspectRatio: "4/5", maxWidth: "280px", background: "#0d0d0d", border: "1px solid var(--border)" }}>
+                <img src="/images/about.jpg" alt="Sharad Rajput"
+                  className="w-full h-full object-cover"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                />
+              </div>
             </div>
             <div className="reveal reveal-delay-2 mt-10">
               <div className="h-px w-full mb-8"
