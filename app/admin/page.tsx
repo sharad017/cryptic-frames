@@ -72,10 +72,27 @@ export default function AdminPage() {
     }
   };
 
-  const handleSaveOrder = () => {
-    saveOrder(images);
+  const handleSaveOrder = async () => {
+    setSaved(false);
+    // Call rename API — renames files on disk so first image = cover image
+    try {
+      const res = await fetch("/api/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category: activeTab, images: images[activeTab] || [] }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Update state with new filenames returned from server
+        setImages((prev) => ({ ...prev, [activeTab]: data.images }));
+        saveOrder({ ...images, [activeTab]: data.images });
+      }
+    } catch {
+      // Fallback: just save order in localStorage
+      saveOrder(images);
+    }
     setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    setTimeout(() => setSaved(false), 3000);
   };
 
   const handleResetOrder = () => {
@@ -197,7 +214,7 @@ export default function AdminPage() {
               fontFamily: "var(--font-body)",
             }}
           >
-            {saved ? "✓ Saved" : "Save Order"}
+            {saved ? "✓ Saved & Renamed" : "Save Order"}
           </button>
           <button onClick={loadImages} className="text-xs tracking-widest text-neutral-500 hover:text-white uppercase transition-colors" style={{ fontFamily: "var(--font-body)" }}>Refresh</button>
           <Link href="/" className="text-xs tracking-widest text-neutral-500 hover:text-white uppercase transition-colors" style={{ fontFamily: "var(--font-body)" }}>← View site</Link>
