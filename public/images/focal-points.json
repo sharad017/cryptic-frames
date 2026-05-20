@@ -7,5 +7,9 @@
     "desktop": "50% 30%",
     "mobile": "61% 56%"
   },
-  "featured/IMG20250127090355.jpg": {}
+  "featured/IMG20250127090355.jpg": {},
+  "event/DSC00408.jpg": {
+    "desktop": "52% 5%",
+    "mobile": "55% 26%"
+  }
 }
