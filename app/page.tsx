@@ -100,12 +100,7 @@ export default function Home() {
                 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(3rem, 6vw, 5.5rem)" }}>
                 Sharad<br /><em>Rajput</em>
               </h2>
-              {/* About photo — add a photo of yourself named about.jpg to public/images/ */}
-              <div className="overflow-hidden rounded-2xl" style={{ aspectRatio: "4/5", maxWidth: "280px", background: "#0d0d0d", border: "1px solid var(--border)" }}>
-                <img src="/images/about.jpg" alt="Sharad Rajput"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+
             </div>
             <div className="reveal reveal-delay-2 mt-10">
               <div className="h-px w-full mb-8"
