@@ -4,23 +4,25 @@ export default function HeroText() {
   return (
     <div className="absolute bottom-0 left-0 w-full z-[4] px-6 md:px-14 pb-16 md:pb-24 flex flex-col items-start">
 
-      <p className="hero-line-1 text-[10px] tracking-[0.55em] uppercase mb-4"
+      <p className="hero-line-1 text-[10px] tracking-[0.55em] uppercase mb-6"
         style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
         Photography Portfolio
       </p>
 
-      {/* Name as hero — elegant, no gimmick */}
-      <h1 className="hero-line-2 font-light leading-[0.88] mb-3"
-        style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.8rem, 9vw, 10rem)", letterSpacing: "-0.02em" }}>
-        Sharad
-      </h1>
-      <h1 className="hero-line-2 font-light leading-[0.88] mb-7 italic"
-        style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.8rem, 9vw, 10rem)", letterSpacing: "-0.02em", color: "var(--accent)" }}>
-        Rajput
+      {/* Clean single-line name — elegant serif, no gimmick */}
+      <h1 className="hero-line-2 font-light mb-8"
+        style={{
+          fontFamily: "var(--font-display)",
+          fontSize: "clamp(2rem, 6.5vw, 7.5rem)",
+          letterSpacing: "0.08em",
+          lineHeight: 1,
+          color: "var(--fg)",
+        }}>
+        SHARAD RAJPUT
       </h1>
 
       <p className="hero-line-3 text-sm leading-loose max-w-xs mb-9"
-        style={{ color: "#888", fontFamily: "var(--font-body)" }}>
+        style={{ color: "#777", fontFamily: "var(--font-body)" }}>
         Capturing stories through shadows,<br />silence, motion, and light.
       </p>
 

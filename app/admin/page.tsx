@@ -347,16 +347,19 @@ export default function AdminPage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-                      {/* Click area — full image editor */}
+                      {/* Click area — natural image ratio, no forced crop */}
                       <div className="p-4">
                         <p className="text-[9px] tracking-widest uppercase mb-3" style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
                           Click to set {focalMode} focus point
                         </p>
-                        <div className="relative overflow-hidden rounded-xl"
-                          style={{ aspectRatio: "3/2", cursor: "crosshair" }}
+                        <div className="relative rounded-xl overflow-hidden"
+                          style={{ cursor: "crosshair", display: "inline-block", width: "100%" }}
                           onClick={e => handleFocalClick(e, key)}>
-                          <img src={`/images/${activeTab}/${img}`} alt="" className="w-full h-full object-cover" draggable={false} />
-                          {/* Crosshair */}
+                          {/* Image at natural ratio — no forced aspectRatio */}
+                          <img src={`/images/${activeTab}/${img}`} alt=""
+                            className="w-full h-auto block pointer-events-none select-none"
+                            draggable={false} />
+                          {/* Crosshair overlay */}
                           {(() => {
                             const pos = focalMode === "mobile" ? focal[key]?.mobile : focal[key]?.desktop;
                             if (!pos) return (
@@ -370,33 +373,40 @@ export default function AdminPage() {
                             const [xStr, yStr] = pos.split(" ");
                             return (
                               <div className="absolute pointer-events-none" style={{ left: xStr, top: yStr, transform: "translate(-50%, -50%)" }}>
-                                {/* Crosshair lines */}
-                                <div className="absolute" style={{ width: "40px", height: "1px", background: "var(--accent)", left: "50%", top: "50%", transform: "translate(-50%, -50%)" }} />
-                                <div className="absolute" style={{ width: "1px", height: "40px", background: "var(--accent)", left: "50%", top: "50%", transform: "translate(-50%, -50%)" }} />
-                                <div className="w-4 h-4 rounded-full border-2" style={{ borderColor: "var(--accent)", background: "rgba(184,150,106,0.4)" }} />
+                                <div className="absolute" style={{ width: "48px", height: "1px", background: "var(--accent)", left: "50%", top: "50%", transform: "translate(-50%,-50%)" }} />
+                                <div className="absolute" style={{ width: "1px", height: "48px", background: "var(--accent)", left: "50%", top: "50%", transform: "translate(-50%,-50%)" }} />
+                                <div className="w-5 h-5 rounded-full border-2" style={{ borderColor: "var(--accent)", background: "rgba(184,150,106,0.35)" }} />
                               </div>
                             );
                           })()}
                         </div>
                       </div>
 
-                      {/* Live previews — mobile and desktop crop */}
-                      <div className="p-4 space-y-4">
+                      {/* Live previews — correct ratios per use case */}
+                      <div className="p-4 space-y-5">
                         <p className="text-[9px] tracking-widest uppercase" style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>
-                          Live preview
+                          Live preview — how it crops on site
                         </p>
-                        {/* Mobile preview — portrait crop */}
+
+                        {/* Mobile preview */}
                         <div>
-                          <p className="text-[9px] mb-2" style={{ color: "#444", fontFamily: "var(--font-body)" }}>📱 Mobile (portrait card)</p>
-                          <div className="overflow-hidden rounded-lg" style={{ aspectRatio: "3/4", maxWidth: "120px" }}>
+                          <p className="text-[9px] mb-2" style={{ color: "#555", fontFamily: "var(--font-body)" }}>
+                            📱 Mobile — {activeTab === "featured" ? "hero (full screen)" : "category card"}
+                          </p>
+                          <div className="overflow-hidden rounded-lg"
+                            style={{ aspectRatio: activeTab === "featured" ? "9/16" : "3/2", maxWidth: activeTab === "featured" ? "100px" : "220px" }}>
                             <img src={`/images/${activeTab}/${img}`} alt="" className="w-full h-full object-cover"
                               style={{ objectPosition: mobilePos }} draggable={false} />
                           </div>
                         </div>
-                        {/* Desktop preview — landscape crop */}
+
+                        {/* Desktop preview */}
                         <div>
-                          <p className="text-[9px] mb-2" style={{ color: "#444", fontFamily: "var(--font-body)" }}>🖥 Desktop (category card)</p>
-                          <div className="overflow-hidden rounded-lg" style={{ aspectRatio: "16/9", maxWidth: "240px" }}>
+                          <p className="text-[9px] mb-2" style={{ color: "#555", fontFamily: "var(--font-body)" }}>
+                            🖥 Desktop — {activeTab === "featured" ? "hero (wide)" : "category card"}
+                          </p>
+                          <div className="overflow-hidden rounded-lg"
+                            style={{ aspectRatio: activeTab === "featured" ? "21/9" : "4/3", maxWidth: "280px" }}>
                             <img src={`/images/${activeTab}/${img}`} alt="" className="w-full h-full object-cover"
                               style={{ objectPosition: desktopPos }} draggable={false} />
                           </div>
