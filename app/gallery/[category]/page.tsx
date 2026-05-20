@@ -4,7 +4,6 @@ import { useSearchParams } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 import Navbar from "@/app/components/Navbar";
 import PageTransition from "@/app/components/PageTransition";
-import { getOrderedImages } from "@/app/hooks/useImageOrder";
 import Lightbox from "@/app/components/Lightbox";
 import WatermarkedImage from "@/app/components/WatermarkedImage";
 import CustomCursor from "@/app/components/CustomCursor";
@@ -12,26 +11,21 @@ import CustomCursor from "@/app/components/CustomCursor";
 export default function GalleryPage({ params }: { params: Promise<{ category: string }> }) {
   const { category } = use(params);
   const searchParams = useSearchParams();
-
   const [images, setImages] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    // Fetch the static manifest.json instead of calling an API function
-    fetch("/images/manifest.json")
+    fetch("/images/manifest.json?t=" + Date.now())
       .then((r) => r.json())
       .then((manifest: Record<string, string[]>) => {
-        const raw = manifest[category] || [];
-        const ordered = getOrderedImages(category, raw);
-        setImages(ordered);
+        const imgs = manifest[category] || [];
+        setImages(imgs);
         setLoaded(true);
         const photoParam = searchParams.get("photo");
         if (photoParam !== null) {
           const idx = parseInt(photoParam, 10);
-          if (!isNaN(idx) && idx >= 0 && idx < ordered.length) {
-            setSelectedIndex(idx);
-          }
+          if (!isNaN(idx) && idx >= 0 && idx < imgs.length) setSelectedIndex(idx);
         }
       })
       .catch(() => setLoaded(true));
@@ -51,9 +45,7 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
     window.history.replaceState({}, "", url.toString());
   }, []);
 
-  const selectedImage = selectedIndex !== null
-    ? `/images/${category}/${images[selectedIndex]}`
-    : null;
+  const selectedImage = selectedIndex !== null ? `/images/${category}/${images[selectedIndex]}` : null;
 
   return (
     <PageTransition>
@@ -79,18 +71,14 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
         {!loaded ? (
           <div className="flex items-center justify-center py-32">
             <div className="flex flex-col items-center gap-4">
-              <div className="w-8 h-8 rounded-full border-t animate-spin"
-                style={{ borderColor: "var(--accent)" }} />
-              <p className="text-[10px] tracking-[0.4em] uppercase"
-                style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>Loading</p>
+              <div className="w-8 h-8 rounded-full border-t animate-spin" style={{ borderColor: "var(--accent)" }} />
+              <p className="text-[10px] tracking-[0.4em] uppercase" style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>Loading</p>
             </div>
           </div>
         ) : images.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-32"
-            style={{ color: "var(--muted)" }}>
+          <div className="flex flex-col items-center justify-center py-32" style={{ color: "var(--muted)" }}>
             <p className="text-5xl mb-4">∅</p>
-            <p className="text-[10px] tracking-widest uppercase"
-              style={{ fontFamily: "var(--font-body)" }}>No images yet</p>
+            <p className="text-[10px] tracking-widest uppercase" style={{ fontFamily: "var(--font-body)" }}>No images yet</p>
           </div>
         ) : (
           <div className="columns-2 md:columns-2 lg:columns-3 gap-2 md:gap-3 px-2 md:px-6 pb-24">

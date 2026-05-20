@@ -19,6 +19,7 @@ const CATEGORIES = [
   { slug: "event",    label: "Event",     desc: "Moments worth remembering" },
   { slug: "portrait", label: "Portrait",  desc: "Faces. Stories. Silence." },
   { slug: "street",   label: "Street",    desc: "Life between the lines" },
+  { slug: "product",  label: "Product",   desc: "Objects with a story" },
 ];
 
 function getManifest(): Record<string, string[]> {
