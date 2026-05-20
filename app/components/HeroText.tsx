@@ -3,18 +3,27 @@
 export default function HeroText() {
   return (
     <div className="absolute bottom-0 left-0 w-full z-[4] px-6 md:px-14 pb-16 md:pb-24 flex flex-col items-start">
-      <p className="hero-line-1 text-[10px] tracking-[0.55em] uppercase mb-5"
+
+      <p className="hero-line-1 text-[10px] tracking-[0.55em] uppercase mb-4"
         style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
         Photography Portfolio
       </p>
-      <h1 className="hero-line-2 font-light leading-[0.88] whitespace-nowrap mb-6"
-        style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.4rem, 8vw, 9rem)", letterSpacing: "-0.02em" }}>
-        cryptic.frames
+
+      {/* Name as hero — elegant, no gimmick */}
+      <h1 className="hero-line-2 font-light leading-[0.88] mb-3"
+        style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.8rem, 9vw, 10rem)", letterSpacing: "-0.02em" }}>
+        Sharad
       </h1>
+      <h1 className="hero-line-2 font-light leading-[0.88] mb-7 italic"
+        style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.8rem, 9vw, 10rem)", letterSpacing: "-0.02em", color: "var(--accent)" }}>
+        Rajput
+      </h1>
+
       <p className="hero-line-3 text-sm leading-loose max-w-xs mb-9"
         style={{ color: "#888", fontFamily: "var(--font-body)" }}>
         Capturing stories through shadows,<br />silence, motion, and light.
       </p>
+
       <div className="hero-line-4 flex items-center gap-6">
         <a href="#categories"
           className="px-7 py-3 text-[10px] tracking-[0.3em] uppercase rounded-full transition-all duration-300 hover:text-[#b8966a]"
