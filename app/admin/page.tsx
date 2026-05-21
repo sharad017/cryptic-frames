@@ -350,18 +350,18 @@ export default function AdminPage() {
                     <div className="p-4 flex items-center justify-between flex-wrap gap-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                       <p className="text-[10px] tracking-widest truncate max-w-[200px]" style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>{img}</p>
                       <div className="flex items-center gap-2 flex-wrap">
-                        {/* Copy buttons */}
+                        {/* Copy buttons — clean text style */}
                         <button onClick={copyToDesktop}
-                          className="px-3 py-1.5 text-[9px] tracking-widest uppercase rounded-full transition-all hover:opacity-80"
-                          style={{ background: "rgba(255,255,255,0.05)", color: "var(--muted)", border: "1px solid rgba(255,255,255,0.08)", fontFamily: "var(--font-body)" }}
-                          title="Copy mobile focal point to desktop">
-                          📱→🖥
+                          className="transition-all duration-200 hover:text-white"
+                          style={{ fontFamily: "var(--font-body)", fontSize: "0.6rem", letterSpacing: "0.2em", color: "var(--muted)", textTransform: "uppercase", padding: "6px 10px", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "4px", background: "transparent" }}
+                          title="Copy mobile focus to desktop">
+                          Mobile → Desktop
                         </button>
                         <button onClick={copyToMobile}
-                          className="px-3 py-1.5 text-[9px] tracking-widest uppercase rounded-full transition-all hover:opacity-80"
-                          style={{ background: "rgba(255,255,255,0.05)", color: "var(--muted)", border: "1px solid rgba(255,255,255,0.08)", fontFamily: "var(--font-body)" }}
-                          title="Copy desktop focal point to mobile">
-                          🖥→📱
+                          className="transition-all duration-200 hover:text-white"
+                          style={{ fontFamily: "var(--font-body)", fontSize: "0.6rem", letterSpacing: "0.2em", color: "var(--muted)", textTransform: "uppercase", padding: "6px 10px", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "4px", background: "transparent" }}
+                          title="Copy desktop focus to mobile">
+                          Desktop → Mobile
                         </button>
                         {/* Save button */}
                         <button onClick={() => saveFocalPoint(key)} disabled={status === "saving"}
@@ -385,10 +385,10 @@ export default function AdminPage() {
                           {/* Zoom slider */}
                           <div className="flex items-center gap-2">
                             <p className="text-[9px]" style={{ color: "#444", fontFamily: "var(--font-body)" }}>Zoom</p>
-                            <input type="range" min="1" max="3" step="0.1" value={zoom}
+                            <input type="range" min="1" max="3" step="0.05" value={zoom}
                               onChange={e => setFocalZoom(prev => ({ ...prev, [key]: parseFloat(e.target.value) }))}
                               style={{ width: "80px", accentColor: "var(--accent)" }} />
-                            <p className="text-[9px] w-6" style={{ color: "#444", fontFamily: "var(--font-body)" }}>{zoom.toFixed(1)}x</p>
+                            <p className="text-[9px] w-8" style={{ color: "#444", fontFamily: "var(--font-body)" }}>{zoom.toFixed(2)}x</p>
                           </div>
                         </div>
 
@@ -450,7 +450,12 @@ export default function AdminPage() {
                               width: activeTab === "featured" ? "90px" : "200px",
                             }}>
                             <img src={`/images/${activeTab}/${img}`} alt="" className="w-full h-full object-cover"
-                              style={{ objectPosition: mobilePos }} draggable={false} />
+                              style={{
+                                objectPosition: mobilePos,
+                                transform: `scale(${zoom})`,
+                                transformOrigin: mobilePos,
+                                transition: "transform 0.2s ease, object-position 0.2s ease",
+                              }} draggable={false} />
                           </div>
                         </div>
 
@@ -468,7 +473,12 @@ export default function AdminPage() {
                               maxWidth: "100%",
                             }}>
                             <img src={`/images/${activeTab}/${img}`} alt="" className="w-full h-full object-cover"
-                              style={{ objectPosition: desktopPos }} draggable={false} />
+                              style={{
+                                objectPosition: desktopPos,
+                                transform: `scale(${zoom})`,
+                                transformOrigin: desktopPos,
+                                transition: "transform 0.2s ease, object-position 0.2s ease",
+                              }} draggable={false} />
                           </div>
                         </div>
                       </div>

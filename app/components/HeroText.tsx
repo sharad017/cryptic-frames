@@ -2,107 +2,64 @@
 
 export default function HeroText() {
   return (
-    <div className="absolute bottom-0 left-0 w-full z-[4] px-6 md:px-14 pb-14 md:pb-20 flex flex-col items-start">
+    <div className="absolute bottom-0 left-0 w-full z-[4] px-6 md:px-12 pb-20 md:pb-28 flex flex-col items-start">
 
       {/* Eyebrow */}
-      <div className="hero-line-1 flex items-center gap-3 mb-6 md:mb-8">
-        <div className="w-8 h-px" style={{ background: "var(--accent)" }} />
-        <p className="text-[9px] tracking-[0.5em] uppercase"
-          style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
-          Photography Portfolio
-        </p>
-      </div>
+      <p className="hero-line-1 uppercase mb-4 md:mb-5"
+        style={{ fontFamily: "var(--font-body)", fontSize: "0.6rem", letterSpacing: "0.45em", color: "var(--accent)" }}>
+        Photography Portfolio
+      </p>
 
-      {/* Name — split lines, strong composition */}
-      <div className="hero-line-2 mb-6 md:mb-8">
-        <h1 className="font-light leading-[0.85] block"
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(3.2rem, 10vw, 11rem)",
-            letterSpacing: "-0.01em",
-            color: "var(--fg)",
-          }}>
+      {/* Name — all caps, both lines same cream color, massive */}
+      <div className="hero-line-2 mb-3 md:mb-4">
+        <h1 className="uppercase font-light leading-[0.88] block"
+          style={{ fontFamily: "var(--font-display)", fontSize: "clamp(3.8rem, 11.5vw, 13rem)", letterSpacing: "0.04em", color: "var(--fg)" }}>
           Sharad
         </h1>
-        <h1 className="font-light leading-[0.85] block italic"
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(3.2rem, 10vw, 11rem)",
-            letterSpacing: "-0.01em",
-            color: "var(--accent)",
-          }}>
+        <h1 className="uppercase font-light leading-[0.88] block"
+          style={{ fontFamily: "var(--font-display)", fontSize: "clamp(3.8rem, 11.5vw, 13rem)", letterSpacing: "0.04em", color: "var(--fg)" }}>
           Rajput
         </h1>
       </div>
 
+      {/* Gold accent line under name */}
+      <div className="hero-line-2 mb-6 md:mb-7" style={{ width: "clamp(2.5rem, 6vw, 5rem)", height: "1px", background: "var(--accent)" }} />
+
       {/* Tagline */}
       <p className="hero-line-3 mb-8 md:mb-10"
-        style={{
-          color: "rgba(232,226,217,0.45)",
-          fontFamily: "var(--font-body)",
-          fontSize: "clamp(0.75rem, 1.4vw, 0.95rem)",
-          lineHeight: 1.9,
-          maxWidth: "26rem",
-          letterSpacing: "0.02em",
-        }}>
-        Cinematic frames inspired<br />
-        by silence, contrast, and emotion.
+        style={{ fontFamily: "var(--font-body)", fontSize: "clamp(0.78rem, 1.3vw, 0.9rem)", color: "rgba(232,226,217,0.5)", lineHeight: 1.85, maxWidth: "22rem", letterSpacing: "0.01em" }}>
+        Capturing stories through shadows,<br />silence, motion, and light.
       </p>
 
       {/* CTAs */}
-      <div className="hero-line-4 flex items-center gap-5 md:gap-8">
+      <div className="hero-line-4 flex items-center gap-6 md:gap-8">
         <a href="#categories"
-          className="group flex items-center gap-3 transition-all duration-400"
+          className="group flex items-center gap-3 transition-all duration-300 hover:bg-white hover:text-black"
           style={{
-            border: "1px solid rgba(255,255,255,0.18)",
-            borderRadius: "2px",
-            padding: "12px 24px",
-            fontFamily: "var(--font-body)",
-            fontSize: "0.65rem",
-            letterSpacing: "0.25em",
-            textTransform: "uppercase",
-            background: "rgba(255,255,255,0.03)",
-          }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)";
-            (e.currentTarget as HTMLElement).style.color = "var(--accent)";
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.18)";
-            (e.currentTarget as HTMLElement).style.color = "inherit";
+            fontFamily: "var(--font-body)", fontSize: "0.62rem", letterSpacing: "0.22em",
+            textTransform: "uppercase", padding: "13px 26px",
+            background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.3)",
+            borderRadius: "100px",
           }}>
-          View Portfolio
+          Explore Work
           <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
         </a>
         <a href="#about"
-          className="transition-colors duration-300"
-          style={{
-            fontFamily: "var(--font-body)",
-            fontSize: "0.65rem",
-            letterSpacing: "0.25em",
-            textTransform: "uppercase",
-            color: "rgba(232,226,217,0.35)",
-          }}
-          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--fg)")}
-          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "rgba(232,226,217,0.35)")}>
+          className="uppercase transition-colors duration-300 hover:text-white"
+          style={{ fontFamily: "var(--font-body)", fontSize: "0.62rem", letterSpacing: "0.22em", color: "rgba(232,226,217,0.4)" }}>
           About Me
         </a>
       </div>
 
-      {/* Scroll indicator — right side */}
-      <div className="hero-line-4 absolute bottom-6 right-6 md:bottom-10 md:right-10 flex flex-col items-center gap-3">
-        <span style={{
-          fontFamily: "var(--font-body)",
-          fontSize: "0.55rem",
-          letterSpacing: "0.35em",
-          textTransform: "uppercase",
-          color: "rgba(232,226,217,0.25)",
-          writingMode: "vertical-rl",
-          marginBottom: "8px",
+      {/* Scroll to Explore — right side */}
+      <div className="hero-line-4 absolute right-6 md:right-10 bottom-8 md:bottom-12 flex flex-col items-center gap-3">
+        <span className="uppercase" style={{
+          fontFamily: "var(--font-body)", fontSize: "0.5rem", letterSpacing: "0.35em",
+          color: "rgba(232,226,217,0.22)", writingMode: "vertical-rl",
         }}>
           Scroll to Explore
         </span>
-        <div className="w-px h-12" style={{ background: "linear-gradient(to bottom, rgba(232,226,217,0.25), transparent)" }} />
+        <div className="w-px h-14" style={{ background: "linear-gradient(to bottom, rgba(184,150,106,0.5), transparent)" }} />
       </div>
     </div>
   );

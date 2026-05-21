@@ -10,6 +10,7 @@ import HeroSlideshow from "./components/HeroSlideshow";
 import CategoryGrid from "./components/CategoryGrid";
 import HeroText from "./components/HeroText";
 import PitchSection from "./components/PitchSection";
+import CategoryStrip from "./components/CategoryStrip";
 import Footer from "./components/Footer";
 
 const CATEGORIES = [
@@ -72,11 +73,7 @@ export default function Home() {
         <HeroText />
       </section>
 
-      {/* ── MARQUEE ── */}
-      <Marquee />
 
-      {/* ── QUICK PITCH ── */}
-      <PitchSection />
 
       {/* ── CATEGORIES ── */}
       <section id="categories" className="px-5 md:px-12 py-20 md:py-28">
