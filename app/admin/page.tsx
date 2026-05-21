@@ -32,12 +32,24 @@ export default function AdminPage() {
   const loadImages = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/images/manifest.json?t=" + Date.now());
-      const manifest = await res.json();
+      const [manifestRes, orderRes] = await Promise.all([
+        fetch("/images/manifest.json?t=" + Date.now()),
+        fetch("/images/order.json?t=" + Date.now()),
+      ]);
+      const manifest = await manifestRes.json();
+      let order: ImageMap = {};
+      try { order = await orderRes.json(); } catch {}
       const merged: ImageMap = {};
-      for (const cat of CATEGORIES) merged[cat] = manifest[cat] || [];
+      for (const cat of CATEGORIES) {
+        const all: string[] = manifest[cat] || [];
+        const saved: string[] = order[cat] || [];
+        if (saved.length === 0) { merged[cat] = all; continue; }
+        const ordered = saved.filter((f: string) => all.includes(f));
+        for (const f of all) { if (!ordered.includes(f)) ordered.push(f); }
+        merged[cat] = ordered;
+      }
       setImages(merged);
-    } catch { }
+    } catch {}
     setLoading(false);
   }, []);
 

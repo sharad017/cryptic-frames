@@ -141,19 +141,7 @@ export default function Lightbox({ image, category, index, onClose, onPrev, onNe
             style={{ boxShadow: "0 24px 80px rgba(0,0,0,0.85)", willChange: "opacity, transform", display: "block" }}
             draggable={false}
           />
-          {/* Watermark on fullscreen too */}
-          <div
-            className="absolute bottom-3 right-4 pointer-events-none select-none"
-            style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "clamp(10px, 1.3vw, 14px)",
-              color: "rgba(255,255,255,0.22)",
-              letterSpacing: "0.15em",
-              fontStyle: "italic",
-            }}
-          >
-            cryptic.frames
-          </div>
+
         </motion.div>
       </AnimatePresence>
 

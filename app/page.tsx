@@ -24,18 +24,28 @@ const CATEGORIES = [
 
 function getManifest(): Record<string, string[]> {
   try {
-    const p = path.join(process.cwd(), "public/images/manifest.json");
-    return JSON.parse(fs.readFileSync(p, "utf-8"));
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "public/images/manifest.json"), "utf-8"));
+  } catch { return {}; }
+}
+
+function getOrder(): Record<string, string[]> {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "public/images/order.json"), "utf-8"));
   } catch { return {}; }
 }
 
 function getImages(folder: string): string[] {
-  return getManifest()[folder] || [];
+  const all = getManifest()[folder] || [];
+  const saved = getOrder()[folder] || [];
+  if (saved.length === 0) return all;
+  const ordered = saved.filter((f: string) => all.includes(f));
+  for (const f of all) { if (!ordered.includes(f)) ordered.push(f); }
+  return ordered;
 }
 
 export default function Home() {
   const featuredImgs = getImages("featured").map((f) => `/images/featured/${f}`);
-  const heroImages = ["/images/hero.jpg", ...featuredImgs].slice(0, 6);
+  const heroImages = featuredImgs.length > 0 ? featuredImgs.slice(0, 6) : ["/images/hero.jpg"];
 
   const categories = CATEGORIES.map((cat) => {
     const imgs = getImages(cat.slug);
