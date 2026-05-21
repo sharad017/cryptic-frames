@@ -2,47 +2,107 @@
 
 export default function HeroText() {
   return (
-    <div className="absolute bottom-0 left-0 w-full z-[4] px-6 md:px-14 pb-16 md:pb-24 flex flex-col items-start">
+    <div className="absolute bottom-0 left-0 w-full z-[4] px-6 md:px-14 pb-14 md:pb-20 flex flex-col items-start">
 
-      <p className="hero-line-1 text-[10px] tracking-[0.55em] uppercase mb-6"
-        style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
-        Photography Portfolio
-      </p>
+      {/* Eyebrow */}
+      <div className="hero-line-1 flex items-center gap-3 mb-6 md:mb-8">
+        <div className="w-8 h-px" style={{ background: "var(--accent)" }} />
+        <p className="text-[9px] tracking-[0.5em] uppercase"
+          style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
+          Photography Portfolio
+        </p>
+      </div>
 
-      {/* Clean single-line name — elegant serif, no gimmick */}
-      <h1 className="hero-line-2 font-light mb-8"
+      {/* Name — split lines, strong composition */}
+      <div className="hero-line-2 mb-6 md:mb-8">
+        <h1 className="font-light leading-[0.85] block"
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "clamp(3.2rem, 10vw, 11rem)",
+            letterSpacing: "-0.01em",
+            color: "var(--fg)",
+          }}>
+          Sharad
+        </h1>
+        <h1 className="font-light leading-[0.85] block italic"
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "clamp(3.2rem, 10vw, 11rem)",
+            letterSpacing: "-0.01em",
+            color: "var(--accent)",
+          }}>
+          Rajput
+        </h1>
+      </div>
+
+      {/* Tagline */}
+      <p className="hero-line-3 mb-8 md:mb-10"
         style={{
-          fontFamily: "var(--font-display)",
-          fontSize: "clamp(2rem, 6.5vw, 7.5rem)",
-          letterSpacing: "0.08em",
-          lineHeight: 1,
-          color: "var(--fg)",
+          color: "rgba(232,226,217,0.45)",
+          fontFamily: "var(--font-body)",
+          fontSize: "clamp(0.75rem, 1.4vw, 0.95rem)",
+          lineHeight: 1.9,
+          maxWidth: "26rem",
+          letterSpacing: "0.02em",
         }}>
-        SHARAD RAJPUT
-      </h1>
-
-      <p className="hero-line-3 text-sm leading-loose max-w-xs mb-9"
-        style={{ color: "#777", fontFamily: "var(--font-body)" }}>
-        Capturing stories through shadows,<br />silence, motion, and light.
+        Cinematic frames inspired<br />
+        by silence, contrast, and emotion.
       </p>
 
-      <div className="hero-line-4 flex items-center gap-6">
+      {/* CTAs */}
+      <div className="hero-line-4 flex items-center gap-5 md:gap-8">
         <a href="#categories"
-          className="px-7 py-3 text-[10px] tracking-[0.3em] uppercase rounded-full transition-all duration-300 hover:text-[#b8966a]"
-          style={{ border: "1px solid rgba(255,255,255,0.2)", fontFamily: "var(--font-body)", background: "rgba(255,255,255,0.04)", backdropFilter: "blur(8px)" }}>
-          Explore Work
+          className="group flex items-center gap-3 transition-all duration-400"
+          style={{
+            border: "1px solid rgba(255,255,255,0.18)",
+            borderRadius: "2px",
+            padding: "12px 24px",
+            fontFamily: "var(--font-body)",
+            fontSize: "0.65rem",
+            letterSpacing: "0.25em",
+            textTransform: "uppercase",
+            background: "rgba(255,255,255,0.03)",
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)";
+            (e.currentTarget as HTMLElement).style.color = "var(--accent)";
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.18)";
+            (e.currentTarget as HTMLElement).style.color = "inherit";
+          }}>
+          View Portfolio
+          <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
         </a>
-        <a href="#about" className="text-[10px] tracking-[0.3em] uppercase text-neutral-500 hover:text-white transition-colors"
-          style={{ fontFamily: "var(--font-body)" }}>
-          About me
+        <a href="#about"
+          className="transition-colors duration-300"
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: "0.65rem",
+            letterSpacing: "0.25em",
+            textTransform: "uppercase",
+            color: "rgba(232,226,217,0.35)",
+          }}
+          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--fg)")}
+          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "rgba(232,226,217,0.35)")}>
+          About Me
         </a>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="hero-line-4 absolute bottom-8 right-8 flex flex-col items-center gap-3">
-        <span className="text-[9px] tracking-[0.4em] uppercase"
-          style={{ color: "var(--muted)", fontFamily: "var(--font-body)", writingMode: "vertical-rl" }}>Scroll</span>
-        <div className="w-px h-10" style={{ background: "linear-gradient(to bottom, var(--muted), transparent)" }} />
+      {/* Scroll indicator — right side */}
+      <div className="hero-line-4 absolute bottom-6 right-6 md:bottom-10 md:right-10 flex flex-col items-center gap-3">
+        <span style={{
+          fontFamily: "var(--font-body)",
+          fontSize: "0.55rem",
+          letterSpacing: "0.35em",
+          textTransform: "uppercase",
+          color: "rgba(232,226,217,0.25)",
+          writingMode: "vertical-rl",
+          marginBottom: "8px",
+        }}>
+          Scroll to Explore
+        </span>
+        <div className="w-px h-12" style={{ background: "linear-gradient(to bottom, rgba(232,226,217,0.25), transparent)" }} />
       </div>
     </div>
   );

@@ -24,6 +24,7 @@ export default function AdminPage() {
   const [focal, setFocal] = useState<FocalMap>({});
   const [focalSaving, setFocalSaving] = useState<Record<string, SaveStatus>>({});
   const [focalMode, setFocalMode] = useState<"desktop" | "mobile">("mobile");
+  const [focalZoom, setFocalZoom] = useState<Record<string, number>>({}); // zoom per image key
 
   const dragIdx = useRef<number | null>(null);
   const dragOverIdx = useRef<number | null>(null);
@@ -305,8 +306,8 @@ export default function AdminPage() {
       {/* ── FOCAL POINT VIEW ── */}
       {view === "focal" && (
         <div className="px-5 md:px-10 py-6 pb-20">
-          {/* Mode toggle + instructions */}
-          <div className="flex items-start gap-6 mb-8 flex-wrap">
+          {/* Mode toggle */}
+          <div className="flex items-center gap-4 mb-8 flex-wrap">
             <div className="flex rounded-full overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
               {(["mobile", "desktop"] as const).map(m => (
                 <button key={m} onClick={() => setFocalMode(m)}
@@ -316,8 +317,8 @@ export default function AdminPage() {
                 </button>
               ))}
             </div>
-            <p className="text-[10px] leading-loose max-w-sm" style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>
-              Click anywhere on an image to place the focus point. The preview shows exactly how it will crop on that device. Set both mobile and desktop, then save.
+            <p className="text-[10px]" style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>
+              Click image to set focus · scroll to zoom · copy button mirrors to other device
             </p>
           </div>
 
@@ -327,86 +328,127 @@ export default function AdminPage() {
               <p className="text-[10px] tracking-widest uppercase" style={{ fontFamily: "var(--font-body)" }}>No images</p>
             </div>
           ) : (
-            <div className="space-y-12">
+            <div className="space-y-10">
               {current.map((img) => {
                 const key = `${activeTab}/${img}`;
                 const status = focalSaving[key] || "idle";
                 const mobilePos = getFocalPos(key, "mobile");
                 const desktopPos = getFocalPos(key, "desktop");
+                const zoom = focalZoom[key] || 1;
+
+                // Copy focal point from one device to other
+                const copyToDesktop = () => {
+                  setFocal(prev => ({ ...prev, [key]: { ...prev[key], desktop: prev[key]?.mobile || "50% 50%" } }));
+                };
+                const copyToMobile = () => {
+                  setFocal(prev => ({ ...prev, [key]: { ...prev[key], mobile: prev[key]?.desktop || "50% 30%" } }));
+                };
 
                 return (
-                  <div key={img} className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}>
+                  <div key={img} className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.015)" }}>
+                    {/* Header row */}
                     <div className="p-4 flex items-center justify-between flex-wrap gap-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                      <p className="text-[10px] tracking-widest truncate" style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>{img}</p>
-                      <div className="flex items-center gap-3">
-                        <p className="text-[9px]" style={{ color: "#333", fontFamily: "var(--font-body)" }}>
-                          Mobile: {focal[key]?.mobile || "not set"} · Desktop: {focal[key]?.desktop || "not set"}
-                        </p>
+                      <p className="text-[10px] tracking-widest truncate max-w-[200px]" style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>{img}</p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {/* Copy buttons */}
+                        <button onClick={copyToDesktop}
+                          className="px-3 py-1.5 text-[9px] tracking-widest uppercase rounded-full transition-all hover:opacity-80"
+                          style={{ background: "rgba(255,255,255,0.05)", color: "var(--muted)", border: "1px solid rgba(255,255,255,0.08)", fontFamily: "var(--font-body)" }}
+                          title="Copy mobile focal point to desktop">
+                          📱→🖥
+                        </button>
+                        <button onClick={copyToMobile}
+                          className="px-3 py-1.5 text-[9px] tracking-widest uppercase rounded-full transition-all hover:opacity-80"
+                          style={{ background: "rgba(255,255,255,0.05)", color: "var(--muted)", border: "1px solid rgba(255,255,255,0.08)", fontFamily: "var(--font-body)" }}
+                          title="Copy desktop focal point to mobile">
+                          🖥→📱
+                        </button>
+                        {/* Save button */}
                         <button onClick={() => saveFocalPoint(key)} disabled={status === "saving"}
                           className="px-4 py-1.5 text-[9px] tracking-widest uppercase rounded-full transition-all"
-                          style={{
-                            background: btnColor(status).bg,
-                            color: btnColor(status).color,
-                            border: btnColor(status).border || "none",
-                            fontFamily: "var(--font-body)",
-                          }}>
+                          style={{ background: btnColor(status).bg, color: btnColor(status).color, border: btnColor(status).border || "none", fontFamily: "var(--font-body)" }}>
                           {status === "idle" && "Save"}
                           {status === "saving" && "Saving..."}
-                          {status === "success" && "✓ Saved — deploying"}
+                          {status === "success" && "✓ Saved"}
                           {status === "error" && "✗ Failed"}
                         </button>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-                      {/* Click area — natural image ratio, no forced crop */}
-                      <div className="p-4">
-                        <p className="text-[9px] tracking-widest uppercase mb-3" style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
-                          Click to set {focalMode} focus point
-                        </p>
-                        <div className="relative rounded-xl overflow-hidden"
-                          style={{ cursor: "crosshair", display: "inline-block", width: "100%" }}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                      {/* ── EDITOR: click + zoom ── */}
+                      <div className="p-4 border-b lg:border-b-0 lg:border-r" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-[9px] tracking-widest uppercase" style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
+                            Setting: {focalMode === "mobile" ? "📱 Mobile" : "🖥 Desktop"} focus
+                          </p>
+                          {/* Zoom slider */}
+                          <div className="flex items-center gap-2">
+                            <p className="text-[9px]" style={{ color: "#444", fontFamily: "var(--font-body)" }}>Zoom</p>
+                            <input type="range" min="1" max="3" step="0.1" value={zoom}
+                              onChange={e => setFocalZoom(prev => ({ ...prev, [key]: parseFloat(e.target.value) }))}
+                              style={{ width: "80px", accentColor: "var(--accent)" }} />
+                            <p className="text-[9px] w-6" style={{ color: "#444", fontFamily: "var(--font-body)" }}>{zoom.toFixed(1)}x</p>
+                          </div>
+                        </div>
+
+                        {/* Image editor with zoom and crosshair */}
+                        <div className="relative overflow-hidden rounded-xl"
+                          style={{ cursor: "crosshair", maxHeight: "420px" }}
                           onClick={e => handleFocalClick(e, key)}>
-                          {/* Image at natural ratio — no forced aspectRatio */}
-                          <img src={`/images/${activeTab}/${img}`} alt=""
-                            className="w-full h-auto block pointer-events-none select-none"
-                            draggable={false} />
-                          {/* Crosshair overlay */}
+                          <div style={{ transform: `scale(${zoom})`, transformOrigin: (() => {
+                            const pos = focalMode === "mobile" ? focal[key]?.mobile : focal[key]?.desktop;
+                            return pos || "center center";
+                          })(), transition: "transform 0.2s ease" }}>
+                            <img src={`/images/${activeTab}/${img}`} alt=""
+                              className="w-full h-auto block pointer-events-none select-none"
+                              draggable={false} />
+                          </div>
+
+                          {/* Crosshair */}
                           {(() => {
                             const pos = focalMode === "mobile" ? focal[key]?.mobile : focal[key]?.desktop;
                             if (!pos) return (
                               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                 <p className="text-[9px] tracking-widest uppercase px-3 py-1.5 rounded-full"
-                                  style={{ background: "rgba(7,7,7,0.7)", color: "var(--accent)", fontFamily: "var(--font-body)" }}>
-                                  Click to set focus
+                                  style={{ background: "rgba(7,7,7,0.8)", color: "var(--accent)", fontFamily: "var(--font-body)" }}>
+                                  Click to set focus point
                                 </p>
                               </div>
                             );
                             const [xStr, yStr] = pos.split(" ");
                             return (
                               <div className="absolute pointer-events-none" style={{ left: xStr, top: yStr, transform: "translate(-50%, -50%)" }}>
-                                <div className="absolute" style={{ width: "48px", height: "1px", background: "var(--accent)", left: "50%", top: "50%", transform: "translate(-50%,-50%)" }} />
-                                <div className="absolute" style={{ width: "1px", height: "48px", background: "var(--accent)", left: "50%", top: "50%", transform: "translate(-50%,-50%)" }} />
-                                <div className="w-5 h-5 rounded-full border-2" style={{ borderColor: "var(--accent)", background: "rgba(184,150,106,0.35)" }} />
+                                <div style={{ position: "absolute", width: "50px", height: "1px", background: "var(--accent)", left: "50%", top: "50%", transform: "translate(-50%,-50%)" }} />
+                                <div style={{ position: "absolute", width: "1px", height: "50px", background: "var(--accent)", left: "50%", top: "50%", transform: "translate(-50%,-50%)" }} />
+                                <div className="w-5 h-5 rounded-full border-2" style={{ borderColor: "var(--accent)", background: "rgba(184,150,106,0.3)" }} />
                               </div>
                             );
                           })()}
                         </div>
+                        <p className="text-[9px] mt-2" style={{ color: "#2a2a2a", fontFamily: "var(--font-body)" }}>
+                          Mobile: {focal[key]?.mobile || "not set"} · Desktop: {focal[key]?.desktop || "not set"}
+                        </p>
                       </div>
 
-                      {/* Live previews — correct ratios per use case */}
-                      <div className="p-4 space-y-5">
+                      {/* ── PREVIEWS ── */}
+                      <div className="p-4 space-y-6">
                         <p className="text-[9px] tracking-widest uppercase" style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>
-                          Live preview — how it crops on site
+                          Live preview — exactly how it appears on site
                         </p>
 
                         {/* Mobile preview */}
                         <div>
-                          <p className="text-[9px] mb-2" style={{ color: "#555", fontFamily: "var(--font-body)" }}>
-                            📱 Mobile — {activeTab === "featured" ? "hero (full screen)" : "category card"}
-                          </p>
-                          <div className="overflow-hidden rounded-lg"
-                            style={{ aspectRatio: activeTab === "featured" ? "9/16" : "3/2", maxWidth: activeTab === "featured" ? "100px" : "220px" }}>
+                          <div className="flex items-center gap-2 mb-2">
+                            <p className="text-[9px]" style={{ color: "#555", fontFamily: "var(--font-body)" }}>
+                              📱 {activeTab === "featured" ? "Hero — mobile (full screen portrait)" : "Category card — mobile"}
+                            </p>
+                          </div>
+                          <div className="overflow-hidden rounded-lg inline-block"
+                            style={{
+                              aspectRatio: activeTab === "featured" ? "9/19.5" : "3/2",
+                              width: activeTab === "featured" ? "90px" : "200px",
+                            }}>
                             <img src={`/images/${activeTab}/${img}`} alt="" className="w-full h-full object-cover"
                               style={{ objectPosition: mobilePos }} draggable={false} />
                           </div>
@@ -414,11 +456,17 @@ export default function AdminPage() {
 
                         {/* Desktop preview */}
                         <div>
-                          <p className="text-[9px] mb-2" style={{ color: "#555", fontFamily: "var(--font-body)" }}>
-                            🖥 Desktop — {activeTab === "featured" ? "hero (wide)" : "category card"}
-                          </p>
-                          <div className="overflow-hidden rounded-lg"
-                            style={{ aspectRatio: activeTab === "featured" ? "21/9" : "4/3", maxWidth: "280px" }}>
+                          <div className="flex items-center gap-2 mb-2">
+                            <p className="text-[9px]" style={{ color: "#555", fontFamily: "var(--font-body)" }}>
+                              🖥 {activeTab === "featured" ? "Hero — desktop (wide cinematic)" : "Category card — desktop"}
+                            </p>
+                          </div>
+                          <div className="overflow-hidden rounded-lg inline-block"
+                            style={{
+                              aspectRatio: activeTab === "featured" ? "21/9" : "4/3",
+                              width: activeTab === "featured" ? "280px" : "240px",
+                              maxWidth: "100%",
+                            }}>
                             <img src={`/images/${activeTab}/${img}`} alt="" className="w-full h-full object-cover"
                               style={{ objectPosition: desktopPos }} draggable={false} />
                           </div>
