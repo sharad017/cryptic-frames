@@ -25,7 +25,9 @@
   },
   "event/DSC00463.jpg": {
     "desktop": "2% 46%",
-    "mobile": "30% 68%"
+    "mobile": "0% 83%",
+    "mobileZoom": 1.1,
+    "desktopZoom": 1
   },
   "product/DSC00087.jpg": {
     "desktop": "2% 64%",
