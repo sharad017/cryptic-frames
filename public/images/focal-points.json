@@ -52,5 +52,11 @@
     "mobile": "64% 44%",
     "mobileZoom": 1,
     "desktopZoom": 1
+  },
+  "featured/hero.jpg": {
+    "desktop": "0% 48%",
+    "mobile": "50% 50%",
+    "mobileZoom": 1,
+    "desktopZoom": 1.1
   }
 }
