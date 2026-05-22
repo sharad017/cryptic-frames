@@ -31,7 +31,9 @@
   },
   "product/DSC00087.jpg": {
     "desktop": "2% 64%",
-    "mobile": "1% 99%"
+    "mobile": "1% 99%",
+    "mobileZoom": 1.1,
+    "desktopZoom": 1
   },
   "concert/DSC02342.jpg": {
     "desktop": "10% 46%",
