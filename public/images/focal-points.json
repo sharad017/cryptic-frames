@@ -36,5 +36,11 @@
     "mobile": "13% 91%",
     "mobileZoom": 1.15,
     "desktopZoom": 1
+  },
+  "wildlife/DSC01457.jpg": {
+    "desktop": "50% 30%",
+    "mobile": "50% 90%",
+    "mobileZoom": 1.05,
+    "desktopZoom": 1
   }
 }
