@@ -33,6 +33,8 @@
   },
   "concert/DSC02342.jpg": {
     "desktop": "10% 46%",
-    "mobile": "2% 77%"
+    "mobile": "1% 98%",
+    "mobileZoom": 1.15,
+    "desktopZoom": 1
   }
 }
