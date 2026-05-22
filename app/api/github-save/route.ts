@@ -92,7 +92,12 @@ export async function POST(request: NextRequest) {
       const { data } = body;
       const raw = await getFileContent("public/images/focal-points.json");
       const focal = raw ? JSON.parse(raw) : {};
-      focal[data.key] = { desktop: data.desktop, mobile: data.mobile };
+      focal[data.key] = {
+        desktop: data.desktop,
+        mobile: data.mobile,
+        mobileZoom: data.mobileZoom || 1,
+        desktopZoom: data.desktopZoom || 1,
+      };
       await commitFile("public/images/focal-points.json", JSON.stringify(focal, null, 2), `admin: focal ${data.key}`);
       return Response.json({ success: true });
     }

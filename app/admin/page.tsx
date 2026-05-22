@@ -24,7 +24,11 @@ export default function AdminPage() {
   const [focal, setFocal] = useState<FocalMap>({});
   const [focalSaving, setFocalSaving] = useState<Record<string, SaveStatus>>({});
   const [focalMode, setFocalMode] = useState<"desktop" | "mobile">("mobile");
-  const [focalZoom, setFocalZoom] = useState<Record<string, number>>({}); // zoom per image key
+  // Separate zoom per image per device: key = "category/file__mobile" or "__desktop"
+  const [focalZoom, setFocalZoom] = useState<Record<string, number>>({});
+  const getZoom = (key: string, mode: "mobile" | "desktop") => focalZoom[`${key}__${mode}`] || 1;
+  const setZoom = (key: string, mode: "mobile" | "desktop", val: number) =>
+    setFocalZoom(prev => ({ ...prev, [`${key}__${mode}`]: val }));
 
   const dragIdx = useRef<number | null>(null);
   const dragOverIdx = useRef<number | null>(null);
@@ -138,7 +142,11 @@ export default function AdminPage() {
       const res = await fetch("/api/github-save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "focal", data: { key, ...focal[key] } }),
+        body: JSON.stringify({ type: "focal", data: {
+          key, ...focal[key],
+          mobileZoom: getZoom(key, "mobile"),
+          desktopZoom: getZoom(key, "desktop"),
+        } }),
       });
       const result = await res.json();
       if (result.success) {
@@ -334,7 +342,7 @@ export default function AdminPage() {
                 const status = focalSaving[key] || "idle";
                 const mobilePos = getFocalPos(key, "mobile");
                 const desktopPos = getFocalPos(key, "desktop");
-                const zoom = focalZoom[key] || 1;
+                const zoom = getZoom(key, focalMode);
 
                 // Copy focal point from one device to other
                 const copyToDesktop = () => {
@@ -385,10 +393,10 @@ export default function AdminPage() {
                           {/* Zoom slider */}
                           <div className="flex items-center gap-2">
                             <p className="text-[9px]" style={{ color: "#444", fontFamily: "var(--font-body)" }}>Zoom</p>
-                            <input type="range" min="1" max="3" step="0.05" value={zoom}
-                              onChange={e => setFocalZoom(prev => ({ ...prev, [key]: parseFloat(e.target.value) }))}
+                            <input type="range" min="1" max="3" step="0.05" value={getZoom(key, focalMode)}
+                              onChange={e => setZoom(key, focalMode, parseFloat(e.target.value))}
                               style={{ width: "80px", accentColor: "var(--accent)" }} />
-                            <p className="text-[9px] w-8" style={{ color: "#444", fontFamily: "var(--font-body)" }}>{zoom.toFixed(2)}x</p>
+                            <p className="text-[9px] w-8" style={{ color: "#444", fontFamily: "var(--font-body)" }}>{getZoom(key, focalMode).toFixed(2)}x</p>
                           </div>
                         </div>
 
@@ -452,7 +460,7 @@ export default function AdminPage() {
                             <img src={`/images/${activeTab}/${img}`} alt="" className="w-full h-full object-cover"
                               style={{
                                 objectPosition: mobilePos,
-                                transform: `scale(${zoom})`,
+                                transform: `scale(${getZoom(key, "mobile")})`,
                                 transformOrigin: mobilePos,
                                 transition: "transform 0.2s ease, object-position 0.2s ease",
                               }} draggable={false} />
@@ -475,7 +483,7 @@ export default function AdminPage() {
                             <img src={`/images/${activeTab}/${img}`} alt="" className="w-full h-full object-cover"
                               style={{
                                 objectPosition: desktopPos,
-                                transform: `scale(${zoom})`,
+                                transform: `scale(${getZoom(key, "desktop")})`,
                                 transformOrigin: desktopPos,
                                 transition: "transform 0.2s ease, object-position 0.2s ease",
                               }} draggable={false} />

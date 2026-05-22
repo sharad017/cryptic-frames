@@ -64,11 +64,13 @@ export default function Home() {
       {/* ── HERO ── */}
       <section className="relative h-screen min-h-[640px] overflow-hidden">
         <HeroSlideshow images={heroImages} />
+        {/* Bottom fade to bg */}
         <div className="absolute inset-0 z-[3] pointer-events-none" style={{
-          background: "linear-gradient(to bottom, rgba(6,6,6,0.2) 0%, transparent 30%, transparent 48%, rgba(6,6,6,0.72) 78%, var(--bg) 100%)"
+          background: "linear-gradient(to bottom, rgba(6,6,6,0.15) 0%, transparent 25%, transparent 50%, rgba(6,6,6,0.65) 75%, var(--bg) 100%)"
         }} />
+        {/* Left dark zone — desktop: covers left 55%, mobile: full width dark base */}
         <div className="absolute inset-0 z-[3] pointer-events-none" style={{
-          background: "linear-gradient(to right, rgba(6,6,6,0.55) 0%, transparent 50%)"
+          background: "linear-gradient(to right, rgba(6,6,6,0.88) 0%, rgba(6,6,6,0.75) 25%, rgba(6,6,6,0.45) 45%, rgba(6,6,6,0.1) 60%, transparent 75%)"
         }} />
         <HeroText />
       </section>
