@@ -5,7 +5,6 @@ import { AnimatePresence } from "framer-motion";
 import Navbar from "@/app/components/Navbar";
 import PageTransition from "@/app/components/PageTransition";
 import Lightbox from "@/app/components/Lightbox";
-import WatermarkedImage from "@/app/components/WatermarkedImage";
 import CustomCursor from "@/app/components/CustomCursor";
 import { fetchOrderedImages } from "@/app/hooks/useImageOrder";
 
@@ -20,9 +19,9 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
     fetchOrderedImages(category).then((imgs) => {
       setImages(imgs);
       setLoaded(true);
-      const photoParam = searchParams.get("photo");
-      if (photoParam !== null) {
-        const idx = parseInt(photoParam, 10);
+      const p = searchParams.get("photo");
+      if (p !== null) {
+        const idx = parseInt(p, 10);
         if (!isNaN(idx) && idx >= 0 && idx < imgs.length) setSelectedIndex(idx);
       }
     });
@@ -42,50 +41,73 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
     window.history.replaceState({}, "", url.toString());
   }, []);
 
-  const selectedImage = selectedIndex !== null ? `/images/${category}/${images[selectedIndex]}` : null;
+  const selectedImage = selectedIndex !== null
+    ? `/images/${category}/${images[selectedIndex]}`
+    : null;
 
   return (
     <PageTransition>
       <main className="min-h-screen" style={{ background: "var(--bg)", color: "var(--fg)" }}>
         <CustomCursor />
         <Navbar />
+
+        {/* Header */}
         <div className="px-6 md:px-14 pt-28 md:pt-36 pb-10 md:pb-14">
-          <p className="text-[10px] tracking-[0.5em] uppercase mb-3" style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>Category</p>
+          <p className="text-[10px] tracking-[0.5em] uppercase mb-3"
+            style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
+            Category
+          </p>
           <h1 className="font-light capitalize leading-none"
             style={{ fontFamily: "var(--font-display)", fontSize: "clamp(3.5rem, 10vw, 8rem)", letterSpacing: "-0.01em" }}>
             {category}
           </h1>
           {loaded && (
-            <p className="mt-3 text-[10px] tracking-[0.4em] uppercase" style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>
+            <p className="mt-3 text-[10px] tracking-[0.4em] uppercase"
+              style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>
               {images.length} {images.length === 1 ? "frame" : "frames"}
             </p>
           )}
         </div>
 
+        {/* Grid */}
         {!loaded ? (
           <div className="flex items-center justify-center py-32">
-            <div className="w-8 h-8 rounded-full border-t animate-spin" style={{ borderColor: "var(--accent)" }} />
+            <div className="w-8 h-8 rounded-full border-t animate-spin"
+              style={{ borderColor: "var(--accent)" }} />
           </div>
         ) : images.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32" style={{ color: "var(--muted)" }}>
             <p className="text-5xl mb-4">∅</p>
-            <p className="text-[10px] tracking-widest uppercase" style={{ fontFamily: "var(--font-body)" }}>No images yet</p>
+            <p className="text-[10px] tracking-widest uppercase" style={{ fontFamily: "var(--font-body)" }}>
+              No images yet
+            </p>
           </div>
         ) : (
-          <div className="columns-2 md:columns-2 lg:columns-3 gap-2 md:gap-3 px-2 md:px-6 pb-24">
+          /* 
+            Mobile: 1 column — full width, scroll like Instagram
+            Tablet (md): 2 columns
+            Desktop (lg): 3 columns
+            Grid fills ROW BY ROW (not column by column like the old 'columns' CSS)
+          */
+          <div className="gallery-grid pb-24">
             {images.map((image, index) => (
-              <div key={index}
-                className="break-inside-avoid overflow-hidden rounded-lg md:rounded-xl cursor-pointer group mb-2 md:mb-3 relative"
-                onClick={() => openImage(index)} style={{ isolation: "isolate" }}>
-                <WatermarkedImage
+              <div
+                key={index}
+                className="gallery-item group relative overflow-hidden cursor-pointer"
+                onClick={() => openImage(index)}
+              >
+                <img
                   src={`/images/${category}/${image}`}
-                  className="w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                  style={{ willChange: "transform", transformOrigin: "center", display: "block" }}
+                  alt=""
+                  loading={index < 4 ? "eager" : "lazy"}
+                  className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-110"
+                  style={{ display: "block", willChange: "filter" }}
                 />
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center"
-                  style={{ background: "rgba(6,6,6,0.25)" }}>
-                  <div className="w-9 h-9 rounded-full border flex items-center justify-center" style={{ borderColor: "rgba(255,255,255,0.5)" }}>
-                    <span className="text-white" style={{ fontSize: "0.75rem" }}>⤢</span>
+                  style={{ background: "rgba(6,6,6,0.18)" }}>
+                  <div className="w-9 h-9 rounded-full border flex items-center justify-center"
+                    style={{ borderColor: "rgba(255,255,255,0.4)" }}>
+                    <span className="text-white text-xs">⤢</span>
                   </div>
                 </div>
               </div>
@@ -96,7 +118,9 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
         <AnimatePresence>
           {selectedImage && (
             <Lightbox
-              image={selectedImage} category={category} index={selectedIndex!}
+              image={selectedImage}
+              category={category}
+              index={selectedIndex!}
               onClose={closeImage}
               onPrev={() => openImage(Math.max(0, (selectedIndex ?? 0) - 1))}
               onNext={() => openImage(Math.min(images.length - 1, (selectedIndex ?? 0) + 1))}
