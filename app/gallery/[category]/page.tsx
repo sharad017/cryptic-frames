@@ -6,6 +6,7 @@ import Navbar from "@/app/components/Navbar";
 import PageTransition from "@/app/components/PageTransition";
 import Lightbox from "@/app/components/Lightbox";
 import CustomCursor from "@/app/components/CustomCursor";
+import JustifiedGrid from "@/app/components/JustifiedGrid";
 import { fetchOrderedImages } from "@/app/hooks/useImageOrder";
 
 export default function GalleryPage({ params }: { params: Promise<{ category: string }> }) {
@@ -69,49 +70,26 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
           )}
         </div>
 
-        {/* Grid */}
+        {/* Gallery */}
         {!loaded ? (
           <div className="flex items-center justify-center py-32">
             <div className="w-8 h-8 rounded-full border-t animate-spin"
               style={{ borderColor: "var(--accent)" }} />
           </div>
         ) : images.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-32" style={{ color: "var(--muted)" }}>
+          <div className="flex flex-col items-center justify-center py-32"
+            style={{ color: "var(--muted)" }}>
             <p className="text-5xl mb-4">∅</p>
-            <p className="text-[10px] tracking-widest uppercase" style={{ fontFamily: "var(--font-body)" }}>
-              No images yet
-            </p>
+            <p className="text-[10px] tracking-widest uppercase"
+              style={{ fontFamily: "var(--font-body)" }}>No images yet</p>
           </div>
         ) : (
-          /* 
-            Mobile: 1 column — full width, scroll like Instagram
-            Tablet (md): 2 columns
-            Desktop (lg): 3 columns
-            Grid fills ROW BY ROW (not column by column like the old 'columns' CSS)
-          */
-          <div className="gallery-grid pb-24">
-            {images.map((image, index) => (
-              <div
-                key={index}
-                className="gallery-item group relative overflow-hidden cursor-pointer"
-                onClick={() => openImage(index)}
-              >
-                <img
-                  src={`/images/${category}/${image}`}
-                  alt=""
-                  loading={index < 4 ? "eager" : "lazy"}
-                  className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-110"
-                  style={{ display: "block", willChange: "filter" }}
-                />
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center"
-                  style={{ background: "rgba(6,6,6,0.18)" }}>
-                  <div className="w-9 h-9 rounded-full border flex items-center justify-center"
-                    style={{ borderColor: "rgba(255,255,255,0.4)" }}>
-                    <span className="text-white text-xs">⤢</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="pb-24">
+            <JustifiedGrid
+              images={images}
+              category={category}
+              onImageClick={openImage}
+            />
           </div>
         )}
 
