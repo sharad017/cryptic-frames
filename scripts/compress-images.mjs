@@ -51,6 +51,7 @@ for (const cat of CATEGORIES) {
       const outBuffer = await img
         .resize(needsResize ? { width: MAX_WIDTH, withoutEnlargement: true } : undefined)
         .jpeg({ quality: QUALITY, mozjpeg: true })
+        .keepMetadata()
         .toBuffer();
 
       const newSizeMB = (outBuffer.length / 1024 / 1024).toFixed(1);
