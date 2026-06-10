@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "generate-manifest": "node scripts/generate-manifest.mjs",
+    "generate-alt": "node scripts/generate-alt.mjs",
     "compress": "node scripts/compress-images.mjs"
   },
   "dependencies": {

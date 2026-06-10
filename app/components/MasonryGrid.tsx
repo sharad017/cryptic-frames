@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { useAltText, getAlt } from "@/app/hooks/useAltText";
 
-const GAP = 6; // px gap between images
+const GAP = 6;
 
 export default function MasonryGrid({
   images,
@@ -14,8 +15,8 @@ export default function MasonryGrid({
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [columns, setColumns] = useState(3);
+  const altMap = useAltText();
 
-  // Responsive column count
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -32,22 +33,20 @@ export default function MasonryGrid({
     return () => obs.disconnect();
   }, []);
 
-  // Distribute images into columns top-to-bottom (not left-to-right)
-  // so reading order is natural: col 1 top→bottom, col 2 top→bottom, etc.
-  const cols: { src: string; index: number }[][] = Array.from(
+  const cols: { src: string; index: number; filename: string }[][] = Array.from(
     { length: columns },
     () => []
   );
   images.forEach((img, i) => {
-    cols[i % columns].push({ src: `/images/${category}/${img}`, index: i });
+    cols[i % columns].push({
+      src: `/images/${category}/${img}`,
+      index: i,
+      filename: img,
+    });
   });
 
   return (
-    <div
-      ref={containerRef}
-      className="w-full"
-      style={{ padding: "0 24px 96px" }}
-    >
+    <div ref={containerRef} className="w-full" style={{ padding: "0 24px 96px" }}>
       <div
         style={{
           display: "grid",
@@ -57,15 +56,13 @@ export default function MasonryGrid({
         }}
       >
         {cols.map((col, colIdx) => (
-          <div
-            key={colIdx}
-            style={{ display: "flex", flexDirection: "column", gap: `${GAP}px` }}
-          >
+          <div key={colIdx} style={{ display: "flex", flexDirection: "column", gap: `${GAP}px` }}>
             {col.map((item) => (
               <MasonryItem
                 key={item.index}
                 src={item.src}
                 index={item.index}
+                alt={getAlt(altMap, category, item.filename)}
                 onClick={onImageClick}
               />
             ))}
@@ -79,10 +76,12 @@ export default function MasonryGrid({
 function MasonryItem({
   src,
   index,
+  alt,
   onClick,
 }: {
   src: string;
   index: number;
+  alt: string;
   onClick: (idx: number) => void;
 }) {
   const [loaded, setLoaded] = useState(false);
@@ -92,7 +91,6 @@ function MasonryItem({
       className="relative overflow-hidden cursor-pointer group"
       style={{
         width: "100%",
-        // Skeleton shimmer before image loads
         background: loaded ? "transparent" : "var(--muted, #2a2a2a)",
         opacity: loaded ? 1 : 0.7,
         transition: "opacity 0.4s ease",
@@ -101,20 +99,18 @@ function MasonryItem({
     >
       <img
         src={src}
-        alt=""
+        alt={alt}
         loading={index < 9 ? "eager" : "lazy"}
         onLoad={() => setLoaded(true)}
         style={{
           display: "block",
           width: "100%",
-          height: "auto", // key: natural height, no cropping
+          height: "auto",
           transition: "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), brightness 0.3s ease",
           willChange: "transform",
         }}
         className="group-hover:brightness-110"
       />
-
-      {/* Hover overlay */}
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center"
         style={{ background: "rgba(6,6,6,0.18)" }}
