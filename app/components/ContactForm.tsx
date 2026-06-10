@@ -22,9 +22,6 @@ export default function ContactForm() {
     setStatus("sending");
 
     try {
-      // Formspree — free, no account needed for setup, just replace YOUR_FORM_ID
-      // Get ID: go to formspree.io → New Form → name it "cryptic.frames" → copy the ID from the endpoint URL
-      // e.g. https://formspree.io/f/xpwzgkdo → ID is xpwzgkdo
       const res = await fetch("https://formspree.io/f/mgodpznv", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -142,11 +139,6 @@ export default function ContactForm() {
           Email directly
         </a>
       </div>
-
-      {/* Setup note — nearly invisible, for you only */}
-      <p className="text-[9px] leading-loose pt-1" style={{ color: "#1a1a1a", fontFamily: "var(--font-body)" }}>
-        Setup: formspree.io → New Form → copy ID → replace YOUR_FORM_ID in ContactForm.tsx
-      </p>
     </div>
   );
 }
