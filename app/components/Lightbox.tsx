@@ -3,6 +3,44 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
+type ExifEntry = {
+  camera?: string;
+  lens?: string;
+  focalLength?: string;
+  aperture?: string;
+  shutter?: string;
+  iso?: string;
+  gps?: string;
+};
+
+type ExifMap = Record<string, ExifEntry>;
+
+// Module-level cache so exif.json is only fetched once per session
+let exifCache: ExifMap | null = null;
+
+function useExif(category: string | undefined, filename: string | undefined): ExifEntry | null {
+  const [exif, setExif] = useState<ExifEntry | null>(null);
+
+  useEffect(() => {
+    if (!category || !filename) return;
+    const key = `${category}/${filename}`;
+
+    const apply = (map: ExifMap) => {
+      const entry = map[key];
+      setExif(entry && Object.keys(entry).length > 0 ? entry : null);
+    };
+
+    if (exifCache) { apply(exifCache); return; }
+
+    fetch("/images/exif.json")
+      .then((r) => r.json())
+      .then((data: ExifMap) => { exifCache = data; apply(data); })
+      .catch(() => setExif(null));
+  }, [category, filename]);
+
+  return exif;
+}
+
 type Props = {
   image: string;
   category?: string;
@@ -17,6 +55,10 @@ type Props = {
 export default function Lightbox({ image, category, index, onClose, onPrev, onNext, hasPrev, hasNext }: Props) {
   const [imgLoaded, setImgLoaded] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Extract filename from image path for EXIF lookup
+  const filename = image.split("/").pop();
+  const exif = useExif(category, filename);
 
   useEffect(() => {
     setImgLoaded(false);
@@ -52,6 +94,18 @@ export default function Lightbox({ image, category, index, onClose, onPrev, onNe
     padding: "8px",
   };
 
+  // EXIF pills to display — only show fields that exist
+  const exifPills = exif
+    ? [
+        exif.camera,
+        exif.lens,
+        exif.focalLength,
+        exif.aperture,
+        exif.shutter,
+        exif.iso,
+      ].filter(Boolean)
+    : [];
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -59,7 +113,7 @@ export default function Lightbox({ image, category, index, onClose, onPrev, onNe
       exit={{ opacity: 0 }}
       transition={{ duration: 0.18 }}
       onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center"
       style={{ background: "rgba(4,4,4,0.97)" }}
     >
       {/* Top bar */}
@@ -74,11 +128,12 @@ export default function Lightbox({ image, category, index, onClose, onPrev, onNe
 
         {/* Right actions */}
         <div className="flex items-center gap-4">
-          {/* Share / copy link */}
-          <button onClick={handleShare} style={{ ...btnStyle, fontSize: "0.7rem", letterSpacing: "0.3em", color: copied ? "var(--accent)" : "var(--muted)", fontFamily: "var(--font-body)" }}>
+          <button
+            onClick={handleShare}
+            style={{ ...btnStyle, fontSize: "0.7rem", letterSpacing: "0.3em", color: copied ? "var(--accent)" : "var(--muted)", fontFamily: "var(--font-body)" }}
+          >
             {copied ? "Link copied ✓" : "Share ↗"}
           </button>
-          {/* Close */}
           <button
             onClick={onClose}
             style={btnStyle}
@@ -118,11 +173,13 @@ export default function Lightbox({ image, category, index, onClose, onPrev, onNe
 
       {/* Loading spinner */}
       {!imgLoaded && (
-        <div className="absolute w-8 h-8 rounded-full border-t border-l animate-spin z-40"
-          style={{ borderColor: "var(--accent)", opacity: 0.7 }} />
+        <div
+          className="absolute w-8 h-8 rounded-full border-t border-l animate-spin z-40"
+          style={{ borderColor: "var(--accent)", opacity: 0.7 }}
+        />
       )}
 
-      {/* Image */}
+      {/* Image + EXIF block */}
       <AnimatePresence mode="wait">
         <motion.div
           key={image}
@@ -130,18 +187,46 @@ export default function Lightbox({ image, category, index, onClose, onPrev, onNe
           animate={{ opacity: imgLoaded ? 1 : 0, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="relative"
+          className="relative flex flex-col items-center"
           onClick={(e) => e.stopPropagation()}
         >
           <img
             src={image}
             alt=""
             onLoad={() => setImgLoaded(true)}
-            className="max-w-[90vw] max-h-[86vh] object-contain rounded-md select-none"
-            style={{ boxShadow: "0 24px 80px rgba(0,0,0,0.85)", willChange: "opacity, transform", display: "block" }}
+            className="max-w-[90vw] max-h-[80vh] object-contain rounded-md select-none"
+            style={{
+              boxShadow: "0 24px 80px rgba(0,0,0,0.85)",
+              willChange: "opacity, transform",
+              display: "block",
+            }}
             draggable={false}
           />
 
+          {/* EXIF strip */}
+          {exifPills.length > 0 && (
+            <div
+              className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-4 px-2"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {exifPills.map((pill, i) => (
+                <span
+                  key={i}
+                  className="text-[9px] tracking-[0.25em] uppercase"
+                  style={{
+                    color: i === 0 ? "var(--accent)" : "var(--muted)",
+                    fontFamily: "var(--font-body)",
+                    opacity: i === 0 ? 0.9 : 0.5,
+                  }}
+                >
+                  {pill}
+                  {i < exifPills.length - 1 && (
+                    <span style={{ marginLeft: "1rem", opacity: 0.2 }}>·</span>
+                  )}
+                </span>
+              ))}
+            </div>
+          )}
         </motion.div>
       </AnimatePresence>
 
