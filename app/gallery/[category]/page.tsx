@@ -7,6 +7,7 @@ import PageTransition from "@/app/components/PageTransition";
 import Lightbox from "@/app/components/Lightbox";
 import CustomCursor from "@/app/components/CustomCursor";
 import MasonryGrid from "@/app/components/MasonryGrid";
+import SizeToggle from "@/app/components/SizeToggle";
 import { fetchOrderedImages } from "@/app/hooks/useImageOrder";
 
 export default function GalleryPage({ params }: { params: Promise<{ category: string }> }) {
@@ -15,6 +16,7 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
   const [images, setImages] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [sizeAdjust, setSizeAdjust] = useState(0);
 
   useEffect(() => {
     fetchOrderedImages(category).then((imgs) => {
@@ -71,13 +73,17 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
           >
             {category}
           </h1>
-          {loaded && (
-            <p
-              className="mt-3 text-[10px] tracking-[0.4em] uppercase"
-              style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}
-            >
-              {images.length} {images.length === 1 ? "frame" : "frames"}
-            </p>
+
+          {loaded && images.length > 0 && (
+            <div className="mt-4 flex items-center justify-between flex-wrap gap-4">
+              <p
+                className="text-[10px] tracking-[0.4em] uppercase"
+                style={{ color: "#8a8a8a", fontFamily: "var(--font-body)" }}
+              >
+                {images.length} {images.length === 1 ? "frame" : "frames"}
+              </p>
+              <SizeToggle value={sizeAdjust} onChange={setSizeAdjust} />
+            </div>
           )}
         </div>
 
@@ -107,6 +113,7 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
             images={images}
             category={category}
             onImageClick={openImage}
+            sizeAdjust={sizeAdjust}
           />
         )}
 

@@ -8,13 +8,15 @@ export default function MasonryGrid({
   images,
   category,
   onImageClick,
+  sizeAdjust = 0,
 }: {
   images: string[];
   category: string;
   onImageClick: (idx: number) => void;
+  sizeAdjust?: number; // -1 = larger images (fewer cols), 0 = default, +1 = smaller images (more cols)
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [columns, setColumns] = useState(3);
+  const [baseColumns, setBaseColumns] = useState(3);
   const altMap = useAltText();
 
   useEffect(() => {
@@ -22,16 +24,18 @@ export default function MasonryGrid({
     if (!el) return;
     const update = () => {
       const w = el.getBoundingClientRect().width;
-      if (w < 480) setColumns(1);
-      else if (w < 768) setColumns(2);
-      else if (w < 1280) setColumns(3);
-      else setColumns(4);
+      if (w < 480) setBaseColumns(1);
+      else if (w < 768) setBaseColumns(2);
+      else if (w < 1280) setBaseColumns(3);
+      else setBaseColumns(4);
     };
     const obs = new ResizeObserver(update);
     obs.observe(el);
     update();
     return () => obs.disconnect();
   }, []);
+
+  const columns = Math.min(Math.max(baseColumns + sizeAdjust, 1), 6);
 
   const cols: { src: string; index: number; filename: string }[][] = Array.from(
     { length: columns },
