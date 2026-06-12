@@ -30,7 +30,7 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           {!isHome && (
             <button onClick={() => router.back()}
-              className="text-neutral-600 hover:text-white transition-colors text-lg leading-none mr-1"
+              className="text-neutral-500 hover:text-white transition-colors text-lg leading-none mr-1"
               aria-label="Go back">←</button>
           )}
           <Link href="/"
@@ -44,26 +44,22 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-8">
           {isHome && (
             <>
-              <a href="#categories" style={{ fontFamily: "var(--font-body)", fontSize: "0.62rem", letterSpacing: "0.22em" }}
-                className="uppercase text-neutral-400 hover:text-white transition-colors">Work</a>
-              <a href="#about" style={{ fontFamily: "var(--font-body)", fontSize: "0.62rem", letterSpacing: "0.22em" }}
-                className="uppercase text-neutral-400 hover:text-white transition-colors">About</a>
-              <a href="#contact" style={{ fontFamily: "var(--font-body)", fontSize: "0.62rem", letterSpacing: "0.22em" }}
-                className="uppercase text-neutral-400 hover:text-white transition-colors">Contact</a>
+              <a href="#categories" style={{ fontFamily: "var(--font-body)", fontSize: "0.65rem", letterSpacing: "0.22em" }}
+                className="uppercase text-neutral-300 hover:text-white transition-colors">Work</a>
+              <a href="#about" style={{ fontFamily: "var(--font-body)", fontSize: "0.65rem", letterSpacing: "0.22em" }}
+                className="uppercase text-neutral-300 hover:text-white transition-colors">About</a>
+              <a href="#contact" style={{ fontFamily: "var(--font-body)", fontSize: "0.65rem", letterSpacing: "0.22em" }}
+                className="uppercase text-neutral-300 hover:text-white transition-colors">Contact</a>
             </>
           )}
-          {/* Instagram — bordered box like reference */}
           <a href="https://instagram.com/cryptic.frames" target="_blank" rel="noopener noreferrer"
             style={{
-              fontFamily: "var(--font-body)", fontSize: "0.62rem", letterSpacing: "0.22em",
-              border: "1px solid rgba(255,255,255,0.25)", padding: "6px 14px", borderRadius: "2px",
+              fontFamily: "var(--font-body)", fontSize: "0.65rem", letterSpacing: "0.22em",
+              border: "1px solid rgba(255,255,255,0.35)", padding: "6px 14px", borderRadius: "2px",
             }}
             className="uppercase text-white hover:border-[#b8966a] hover:text-[#b8966a] transition-all duration-300">
             Instagram
           </a>
-          <Link href="/admin"
-            style={{ fontFamily: "var(--font-body)", fontSize: "0.62rem", letterSpacing: "0.22em" }}
-            className="uppercase text-neutral-800 hover:text-neutral-500 transition-colors">Admin</Link>
         </div>
 
         {/* Mobile hamburger */}
@@ -94,9 +90,6 @@ export default function Navbar() {
         <a href="https://instagram.com/cryptic.frames" target="_blank" rel="noopener noreferrer"
           className="font-light tracking-widest transition-colors"
           style={{ fontFamily: "var(--font-display)", fontSize: "2.8rem", color: "#b8966a" }}>Instagram</a>
-        <Link href="/admin" onClick={() => setMenuOpen(false)}
-          className="uppercase text-neutral-800 mt-6"
-          style={{ fontFamily: "var(--font-body)", fontSize: "0.6rem", letterSpacing: "0.3em" }}>Admin</Link>
       </div>
     </>
   );

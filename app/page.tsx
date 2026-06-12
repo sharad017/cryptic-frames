@@ -20,7 +20,7 @@ const CATEGORIES = [
   { slug: "event",    label: "Event",     desc: "Moments worth remembering" },
   { slug: "portrait", label: "Portrait",  desc: "Faces. Stories. Silence." },
   { slug: "street",   label: "Street",    desc: "Life between the lines" },
-  { slug: "product",  label: "Product",   desc: "Objects with a story" },
+  // product hidden until gallery is built out
 ];
 
 function getManifest(): Record<string, string[]> {
@@ -64,18 +64,14 @@ export default function Home() {
       {/* ── HERO ── */}
       <section className="relative h-screen min-h-[640px] overflow-hidden">
         <HeroSlideshow images={heroImages} />
-        {/* Bottom fade to bg */}
         <div className="absolute inset-0 z-[3] pointer-events-none" style={{
           background: "linear-gradient(to bottom, rgba(6,6,6,0.15) 0%, transparent 25%, transparent 50%, rgba(6,6,6,0.65) 75%, var(--bg) 100%)"
         }} />
-        {/* Left dark zone — desktop: covers left 55%, mobile: full width dark base */}
         <div className="absolute inset-0 z-[3] pointer-events-none" style={{
           background: "linear-gradient(to right, rgba(6,6,6,0.88) 0%, rgba(6,6,6,0.75) 25%, rgba(6,6,6,0.45) 45%, rgba(6,6,6,0.1) 60%, transparent 75%)"
         }} />
         <HeroText />
       </section>
-
-
 
       {/* ── CATEGORIES ── */}
       <section id="categories" className="px-5 md:px-12 py-20 md:py-28">
@@ -89,15 +85,13 @@ export default function Home() {
             </h2>
           </div>
           <p className="text-[10px] hidden md:block tracking-widest"
-            style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>
+            style={{ color: "#6a6a6a", fontFamily: "var(--font-body)" }}>
             {totalFrames} frames · {categories.filter(c => c.count > 0).length} genres
           </p>
         </div>
 
         <CategoryGrid categories={categories} />
       </section>
-
-
 
       {/* ── ABOUT ── */}
       <section id="about" className="px-5 md:px-12 py-20 md:py-28" style={{ borderTop: "1px solid var(--border)" }}>
@@ -110,17 +104,16 @@ export default function Home() {
                 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(3rem, 6vw, 5.5rem)" }}>
                 Sharad<br /><em>Rajput</em>
               </h2>
-
             </div>
             <div className="reveal reveal-delay-2 mt-10">
               <div className="h-px w-full mb-8"
                 style={{ background: "linear-gradient(to right, var(--accent), transparent)" }} />
               <div className="grid grid-cols-2 gap-6">
                 {[
-                  { num: "6+",  label: "Genres" },
+                  { num: "6",     label: "Genres" },
                   { num: "Delhi", label: "Based in" },
-                  { num: "2023", label: "Turned professional" },
-                  { num: "∞",   label: "Frames remaining" },
+                  { num: "2023",  label: "Shooting since" },
+                  { num: "∞",    label: "Frames remaining" },
                 ].map((stat) => (
                   <div key={stat.label}>
                     <p className="font-light mb-1"
