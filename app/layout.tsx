@@ -15,10 +15,17 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://cryptic-frames.vercel.app"),
   title: "cryptic.frames — Photography Portfolio",
   description:
     "Capturing stories through shadows, silence, motion, and light. A photography portfolio spanning concert, wildlife, travel, portrait, street, and event photography.",
   openGraph: {
+    title: "cryptic.frames",
+    description: "Capturing stories through shadows, silence, motion, and light.",
+    images: ["/images/hero.jpg"],
+  },
+  twitter: {
+    card: "summary_large_image",
     title: "cryptic.frames",
     description: "Capturing stories through shadows, silence, motion, and light.",
     images: ["/images/hero.jpg"],
