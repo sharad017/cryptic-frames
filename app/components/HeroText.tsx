@@ -2,7 +2,7 @@
 
 export default function HeroText() {
   return (
-    <div className="absolute bottom-0 left-0 w-full z-[4] px-6 md:px-12 pb-20 md:pb-28 flex flex-col items-start">
+    <div className="absolute bottom-0 left-0 w-full z-[4] px-6 md:px-12 pb-24 md:pb-28 flex flex-col items-start">
 
       {/* Eyebrow */}
       <p className="hero-line-1 uppercase mb-4 md:mb-5"
