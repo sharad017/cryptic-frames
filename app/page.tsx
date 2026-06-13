@@ -93,71 +93,23 @@ export default function Home() {
         <CategoryGrid categories={categories} />
       </section>
 
-      {/* ── ABOUT ── */}
+      {/* ── ABOUT (teaser) ── */}
       <section id="about" className="px-5 md:px-12 py-20 md:py-28" style={{ borderTop: "1px solid var(--border)" }}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 md:gap-20 items-start max-w-6xl">
-          <div>
-            <div className="reveal">
-              <p className="text-[10px] tracking-[0.5em] uppercase mb-4"
-                style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>The Photographer</p>
-              <h2 className="font-light leading-[0.92] mb-8"
-                style={{ fontFamily: "var(--font-display)", fontSize: "clamp(3rem, 6vw, 5.5rem)" }}>
-                Sharad<br /><em>Rajput</em>
-              </h2>
-            </div>
-            <div className="reveal reveal-delay-2 mt-10">
-              <div className="h-px w-full mb-8"
-                style={{ background: "linear-gradient(to right, var(--accent), transparent)" }} />
-              <div className="grid grid-cols-2 gap-6">
-                {[
-                  { num: "6",     label: "Genres" },
-                  { num: "Delhi", label: "Based in" },
-                  { num: "2023",  label: "Shooting since" },
-                  { num: "∞",    label: "Frames remaining" },
-                ].map((stat) => (
-                  <div key={stat.label}>
-                    <p className="font-light mb-1"
-                      style={{ fontFamily: "var(--font-display)", fontSize: "2.2rem", color: "var(--accent)" }}>
-                      {stat.num}
-                    </p>
-                    <p className="text-[10px] tracking-widest uppercase leading-snug"
-                      style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>{stat.label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="reveal reveal-delay-2 space-y-6 text-sm leading-[2]"
-            style={{ color: "#7a7570", fontFamily: "var(--font-body)" }}>
-            <p className="text-base leading-relaxed" style={{ color: "var(--fg)", lineHeight: "1.85" }}>
-              Photography found me before I found it. Handed a phone at a family function as a child, I composed frames without knowing what composition was. Something about the instinct was always there.
-            </p>
-            <p>
-              The craft came later — slowly, then all at once. Self-taught through obsessive consumption: studying light, dissecting edits, analyzing why one frame works and another doesn't. No formal training. Just relentless attention.
-            </p>
-            <p>
-              In college, I joined <em style={{ color: "#c8c0b4" }}>Confluenz</em> — one of Delhi's active student photography collectives — and spent a year covering everything from intimate portraits to high-energy concert pits. That year compressed what might have taken five.
-            </p>
-            <p style={{ color: "#9a9590" }}>
-              I work across genres because the frame doesn't care about categories. A wildlife blind and a concert barricade demand the same thing: presence, patience, and the ability to read a moment before it happens.
-            </p>
-            <p>
-              Currently based in Delhi. Open to work across India and beyond.
-            </p>
-            <div className="pt-2 flex items-center gap-8">
-              <a href="https://instagram.com/cryptic.frames" target="_blank" rel="noopener noreferrer"
-                className="text-[10px] tracking-[0.4em] uppercase pb-px hover:opacity-70 transition-opacity"
-                style={{ color: "var(--accent)", borderBottom: "1px solid var(--accent)", fontFamily: "var(--font-body)" }}>
-                Instagram ↗
-              </a>
-              <a href="#contact"
-                className="text-[10px] tracking-[0.4em] uppercase transition-colors hover:text-white"
-                style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>
-                Commission a shoot →
-              </a>
-            </div>
-          </div>
+        <div className="reveal max-w-3xl">
+          <p className="text-[10px] tracking-[0.5em] uppercase mb-4"
+            style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>The Photographer</p>
+          <h2 className="font-light leading-[0.95] mb-6"
+            style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.8rem, 6vw, 5rem)" }}>
+            Sharad <em>Rajput</em>
+          </h2>
+          <p className="text-base leading-relaxed mb-8" style={{ color: "#c8c0b4", maxWidth: "560px", lineHeight: "1.85" }}>
+            Delhi-based, self-taught, working across six genres — from concert pits to quiet wildlife blinds. Member of Confluenz, GGSIPU&apos;s student photography collective.
+          </p>
+          <Link href="/about"
+            className="inline-flex items-center gap-2 text-[10px] tracking-[0.4em] uppercase pb-px hover:opacity-70 transition-opacity"
+            style={{ color: "var(--accent)", borderBottom: "1px solid var(--accent)", fontFamily: "var(--font-body)" }}>
+            Read the full story →
+          </Link>
         </div>
       </section>
 

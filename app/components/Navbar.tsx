@@ -40,18 +40,14 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Desktop nav */}
+        {/* Desktop nav — always visible across all pages */}
         <div className="hidden md:flex items-center gap-8">
-          {isHome && (
-            <>
-              <a href="#categories" style={{ fontFamily: "var(--font-body)", fontSize: "0.65rem", letterSpacing: "0.22em" }}
-                className="uppercase text-neutral-300 hover:text-white transition-colors">Work</a>
-              <a href="#about" style={{ fontFamily: "var(--font-body)", fontSize: "0.65rem", letterSpacing: "0.22em" }}
-                className="uppercase text-neutral-300 hover:text-white transition-colors">About</a>
-              <a href="#contact" style={{ fontFamily: "var(--font-body)", fontSize: "0.65rem", letterSpacing: "0.22em" }}
-                className="uppercase text-neutral-300 hover:text-white transition-colors">Contact</a>
-            </>
-          )}
+          <Link href="/#categories" style={{ fontFamily: "var(--font-body)", fontSize: "0.65rem", letterSpacing: "0.22em" }}
+            className="uppercase text-neutral-300 hover:text-white transition-colors">Work</Link>
+          <Link href="/about" style={{ fontFamily: "var(--font-body)", fontSize: "0.65rem", letterSpacing: "0.22em" }}
+            className="uppercase text-neutral-300 hover:text-white transition-colors">About</Link>
+          <Link href="/#contact" style={{ fontFamily: "var(--font-body)", fontSize: "0.65rem", letterSpacing: "0.22em" }}
+            className="uppercase text-neutral-300 hover:text-white transition-colors">Contact</Link>
           <a href="https://instagram.com/cryptic.frames" target="_blank" rel="noopener noreferrer"
             style={{
               fontFamily: "var(--font-body)", fontSize: "0.65rem", letterSpacing: "0.22em",
@@ -71,22 +67,18 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — always visible across all pages */}
       <div className={`fixed inset-0 z-40 md:hidden flex flex-col items-center justify-center gap-8 transition-all duration-500 ${menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
         style={{ background: "rgba(6,6,6,0.97)", backdropFilter: "blur(24px)" }}>
-        {isHome && (
-          <>
-            <a onClick={() => setMenuOpen(false)} href="#categories"
-              className="font-light tracking-widest hover:text-[#b8966a] transition-colors"
-              style={{ fontFamily: "var(--font-display)", fontSize: "2.8rem" }}>Work</a>
-            <a onClick={() => setMenuOpen(false)} href="#about"
-              className="font-light tracking-widest hover:text-[#b8966a] transition-colors"
-              style={{ fontFamily: "var(--font-display)", fontSize: "2.8rem" }}>About</a>
-            <a onClick={() => setMenuOpen(false)} href="#contact"
-              className="font-light tracking-widest hover:text-[#b8966a] transition-colors"
-              style={{ fontFamily: "var(--font-display)", fontSize: "2.8rem" }}>Contact</a>
-          </>
-        )}
+        <Link onClick={() => setMenuOpen(false)} href="/#categories"
+          className="font-light tracking-widest hover:text-[#b8966a] transition-colors"
+          style={{ fontFamily: "var(--font-display)", fontSize: "2.8rem" }}>Work</Link>
+        <Link onClick={() => setMenuOpen(false)} href="/about"
+          className="font-light tracking-widest hover:text-[#b8966a] transition-colors"
+          style={{ fontFamily: "var(--font-display)", fontSize: "2.8rem" }}>About</Link>
+        <Link onClick={() => setMenuOpen(false)} href="/#contact"
+          className="font-light tracking-widest hover:text-[#b8966a] transition-colors"
+          style={{ fontFamily: "var(--font-display)", fontSize: "2.8rem" }}>Contact</Link>
         <a href="https://instagram.com/cryptic.frames" target="_blank" rel="noopener noreferrer"
           className="font-light tracking-widest transition-colors"
           style={{ fontFamily: "var(--font-display)", fontSize: "2.8rem", color: "#b8966a" }}>Instagram</a>
