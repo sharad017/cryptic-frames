@@ -1,9 +1,12 @@
+import fs from "fs";
+import path from "path";
 import type { Metadata } from "next";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ScrollReveal from "../components/ScrollReveal";
 import CustomCursor from "../components/CustomCursor";
 import PageTransition from "../components/PageTransition";
+import AboutPortrait from "../components/AboutPortrait";
 
 export const metadata: Metadata = {
   title: "About — cryptic.frames",
@@ -32,11 +35,32 @@ const STATS = [
 const GEAR = [
   { kind: "Body", item: "Sony A6600" },
   { kind: "Lens", item: "Sony E PZ 18-105mm F4 G OSS" },
-  { kind: "Body", item: "Nikon D5300" },
-  { kind: "Lens", item: "Nikkor 18-55mm f/3.5-5.6" },
 ];
 
+function getManifest(): Record<string, string[]> {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "public/images/manifest.json"), "utf-8"));
+  } catch { return {}; }
+}
+
+function getOrder(): Record<string, string[]> {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "public/images/order.json"), "utf-8"));
+  } catch { return {}; }
+}
+
+function getAboutImages(): string[] {
+  const all = getManifest()["about"] || [];
+  const saved = getOrder()["about"] || [];
+  if (saved.length === 0) return all;
+  const ordered = saved.filter((f) => all.includes(f));
+  for (const f of all) { if (!ordered.includes(f)) ordered.push(f); }
+  return ordered;
+}
+
 export default function AboutPage() {
+  const aboutImages = getAboutImages().map((f) => `/images/about/${f}`);
+
   return (
     <PageTransition>
       <main className="min-h-screen" style={{ background: "var(--bg)", color: "var(--fg)" }}>
@@ -46,18 +70,42 @@ export default function AboutPage() {
 
         {/* Header */}
         <div className="px-6 md:px-14 pt-28 md:pt-36 pb-12 md:pb-16">
-          <p
-            className="reveal text-[10px] tracking-[0.5em] uppercase mb-3"
-            style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}
-          >
-            About
-          </p>
-          <h1
-            className="reveal font-light leading-[0.92]"
-            style={{ fontFamily: "var(--font-display)", fontSize: "clamp(3.5rem, 9vw, 7.5rem)" }}
-          >
-            Sharad<br /><em>Rajput</em>
-          </h1>
+          {aboutImages.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+              <div>
+                <p
+                  className="reveal text-[10px] tracking-[0.5em] uppercase mb-3"
+                  style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}
+                >
+                  About
+                </p>
+                <h1
+                  className="reveal font-light leading-[0.92]"
+                  style={{ fontFamily: "var(--font-display)", fontSize: "clamp(3.5rem, 8vw, 7.5rem)" }}
+                >
+                  Sharad<br /><em>Rajput</em>
+                </h1>
+              </div>
+              <div className="reveal reveal-delay-1" style={{ maxWidth: "420px" }}>
+                <AboutPortrait images={aboutImages} />
+              </div>
+            </div>
+          ) : (
+            <>
+              <p
+                className="reveal text-[10px] tracking-[0.5em] uppercase mb-3"
+                style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}
+              >
+                About
+              </p>
+              <h1
+                className="reveal font-light leading-[0.92]"
+                style={{ fontFamily: "var(--font-display)", fontSize: "clamp(3.5rem, 9vw, 7.5rem)" }}
+              >
+                Sharad<br /><em>Rajput</em>
+              </h1>
+            </>
+          )}
         </div>
 
         {/* Content */}

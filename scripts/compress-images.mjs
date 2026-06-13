@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const imagesDir = path.join(__dirname, "../public/images");
-const CATEGORIES = ["featured", "concert", "wildlife", "travel", "event", "portrait", "street", "product"];
+const CATEGORIES = ["featured", "concert", "wildlife", "travel", "event", "portrait", "street", "product", "about"];
 const MAX_WIDTH = 2500;
 const QUALITY = 85;
 
