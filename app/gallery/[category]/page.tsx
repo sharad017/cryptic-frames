@@ -8,6 +8,7 @@ import Lightbox from "@/app/components/Lightbox";
 import CustomCursor from "@/app/components/CustomCursor";
 import MasonryGrid from "@/app/components/MasonryGrid";
 import SizeToggle from "@/app/components/SizeToggle";
+import { useGridSize } from "@/app/hooks/useGridSize";
 import { fetchOrderedImages } from "@/app/hooks/useImageOrder";
 
 export default function GalleryPage({ params }: { params: Promise<{ category: string }> }) {
@@ -16,7 +17,7 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
   const [images, setImages] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [sizeAdjust, setSizeAdjust] = useState(0);
+  const [sizeAdjust, setSizeAdjust] = useGridSize();
 
   useEffect(() => {
     fetchOrderedImages(category).then((imgs) => {

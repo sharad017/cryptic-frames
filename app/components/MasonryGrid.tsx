@@ -1,8 +1,13 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useAltText, getAlt } from "@/app/hooks/useAltText";
+import { useIsMobile } from "@/app/hooks/useIsMobile";
 
 const GAP = 6;
+
+// Fixed column counts per device, indexed by sizeAdjust (-1 = Large, 0 = Medium, 1 = Small)
+const MOBILE_COLS: Record<number, number> = { [-1]: 1, 0: 1, 1: 2 };
+const DESKTOP_COLS: Record<number, number> = { [-1]: 2, 0: 3, 1: 4 };
 
 export default function MasonryGrid({
   images,
@@ -13,29 +18,12 @@ export default function MasonryGrid({
   images: string[];
   category: string;
   onImageClick: (idx: number) => void;
-  sizeAdjust?: number; // -1 = larger images (fewer cols), 0 = default, +1 = smaller images (more cols)
+  sizeAdjust?: number;
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [baseColumns, setBaseColumns] = useState(3);
   const altMap = useAltText();
+  const isMobile = useIsMobile();
 
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const update = () => {
-      const w = el.getBoundingClientRect().width;
-      if (w < 480) setBaseColumns(1);
-      else if (w < 768) setBaseColumns(2);
-      else if (w < 1280) setBaseColumns(3);
-      else setBaseColumns(4);
-    };
-    const obs = new ResizeObserver(update);
-    obs.observe(el);
-    update();
-    return () => obs.disconnect();
-  }, []);
-
-  const columns = Math.min(Math.max(baseColumns + sizeAdjust, 1), 6);
+  const columns = (isMobile ? MOBILE_COLS : DESKTOP_COLS)[sizeAdjust] ?? (isMobile ? 1 : 3);
 
   const cols: { src: string; index: number; filename: string }[][] = Array.from(
     { length: columns },
@@ -50,7 +38,7 @@ export default function MasonryGrid({
   });
 
   return (
-    <div ref={containerRef} className="w-full" style={{ padding: "0 24px 96px" }}>
+    <div className="w-full" style={{ padding: "0 24px 96px" }}>
       <div
         style={{
           display: "grid",
