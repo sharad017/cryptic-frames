@@ -76,13 +76,40 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
           </h1>
 
           {loaded && images.length > 0 && (
-            <div className="mt-4 flex items-center justify-between flex-wrap gap-4">
-              <p
-                className="text-[10px] tracking-[0.4em] uppercase"
-                style={{ color: "#8a8a8a", fontFamily: "var(--font-body)" }}
-              >
-                {images.length} {images.length === 1 ? "frame" : "frames"}
-              </p>
+            <div className="mt-5 flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-6">
+                <p
+                  className="text-[10px] tracking-[0.4em] uppercase"
+                  style={{ color: "#8a8a8a", fontFamily: "var(--font-body)" }}
+                >
+                  {images.length} {images.length === 1 ? "frame" : "frames"}
+                </p>
+                {/* Slideshow / book-mode button */}
+                <button
+                  onClick={() => openImage(0)}
+                  className="flex items-center gap-2 text-[10px] tracking-[0.3em] uppercase transition-colors hover:text-white"
+                  style={{
+                    color: "#9a9a9a",
+                    fontFamily: "var(--font-body)",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 0,
+                  }}
+                >
+                  <span style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "20px",
+                    height: "20px",
+                    borderRadius: "50%",
+                    border: "1px solid currentColor",
+                    fontSize: "8px",
+                  }}>▶</span>
+                  Slideshow
+                </button>
+              </div>
               <SizeToggle value={sizeAdjust} onChange={setSizeAdjust} />
             </div>
           )}

@@ -44,13 +44,15 @@ h1, h2, h3, h4 { font-family: var(--font-display), serif; }
   pointer-events: none;
   z-index: 99999;
   transform: translate(-50%, -50%);
-  transition: width 0.2s ease, height 0.2s ease, opacity 0.2s ease, background 0.2s ease;
-  mix-blend-mode: difference;
+  transition: width 0.2s ease, height 0.2s ease, opacity 0.3s ease, background 0.2s ease;
+  opacity: 0;
+}
+#custom-cursor.visible {
+  opacity: 1;
 }
 #custom-cursor.hovering {
   width: 40px; height: 40px;
-  background: rgba(201,169,110,0.3);
-  mix-blend-mode: normal;
+  background: rgba(201,169,110,0.15);
   border: 1px solid var(--accent);
 }
 

@@ -4,13 +4,10 @@ import Link from "next/link";
 import Navbar from "./components/Navbar";
 import ScrollReveal from "./components/ScrollReveal";
 import ContactForm from "./components/ContactForm";
-import Marquee from "./components/Marquee";
 import CustomCursor from "./components/CustomCursor";
 import HeroSlideshow from "./components/HeroSlideshow";
 import CategoryGrid from "./components/CategoryGrid";
 import HeroText from "./components/HeroText";
-import PitchSection from "./components/PitchSection";
-import CategoryStrip from "./components/CategoryStrip";
 import Footer from "./components/Footer";
 
 const CATEGORIES = [
@@ -20,7 +17,6 @@ const CATEGORIES = [
   { slug: "event",    label: "Event",     desc: "Moments worth remembering" },
   { slug: "portrait", label: "Portrait",  desc: "Faces. Stories. Silence." },
   { slug: "street",   label: "Street",    desc: "Life between the lines" },
-  // product hidden until gallery is built out
 ];
 
 function getManifest(): Record<string, string[]> {
@@ -50,7 +46,12 @@ export default function Home() {
 
   const categories = CATEGORIES.map((cat) => {
     const imgs = getImages(cat.slug);
-    return { ...cat, preview: imgs[0] ? `/images/${cat.slug}/${imgs[0]}` : null, count: imgs.length };
+    // Pass up to 3 preview images for hover-flip
+    const previews = imgs
+      .slice(0, 3)
+      .map((f) => `/images/${cat.slug}/${f}`)
+      .filter(Boolean);
+    return { ...cat, previews, count: imgs.length };
   });
 
   const totalFrames = categories.reduce((a, c) => a + c.count, 0);
@@ -89,7 +90,6 @@ export default function Home() {
             {totalFrames} frames · {categories.filter(c => c.count > 0).length} genres
           </p>
         </div>
-
         <CategoryGrid categories={categories} />
       </section>
 
@@ -121,7 +121,7 @@ export default function Home() {
               style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>Contact</p>
             <h2 className="font-light leading-[0.92] mb-4"
               style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.5rem,5vw,4.5rem)" }}>
-              Let's make<br />something real
+              Let&apos;s make<br />something real
             </h2>
             <p className="text-sm" style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>
               Concerts, portraits, events, fashion, travel. Open to commissions and collaborations.
