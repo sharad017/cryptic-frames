@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState, useRef } from "react";
-import { useFocalPoints, getFocalStyle } from "../hooks/useFocalPoint";
+import { useFocalPoints, getFocalStyle, type FocalMap } from "../hooks/useFocalPoint";
 import { useIsMobile } from "../hooks/useIsMobile";
 
 type Category = {
@@ -15,7 +15,7 @@ type Category = {
 function CategoryCard({ cat, index, focal, isMobile }: {
   cat: Category;
   index: number;
-  focal: Record<string, { x: number; y: number }>;
+  focal: FocalMap;
   isMobile: boolean;
 }) {
   const [previewIndex, setPreviewIndex] = useState(0);

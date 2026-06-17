@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 
-type FocalPoint = { desktop: string; mobile: string; desktopZoom?: number; mobileZoom?: number };
-type FocalMap = Record<string, FocalPoint>;
+export type FocalPoint = { desktop: string; mobile: string; desktopZoom?: number; mobileZoom?: number };
+export type FocalMap = Record<string, FocalPoint>;
 
 let cache: FocalMap | null = null;
 
