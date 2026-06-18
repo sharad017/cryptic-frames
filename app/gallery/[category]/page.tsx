@@ -2,6 +2,7 @@
 import { use, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
 import PageTransition from "@/app/components/PageTransition";
 import Lightbox from "@/app/components/Lightbox";
@@ -10,6 +11,15 @@ import MasonryGrid from "@/app/components/MasonryGrid";
 import SizeToggle from "@/app/components/SizeToggle";
 import { useGridSize } from "@/app/hooks/useGridSize";
 import { fetchOrderedImages } from "@/app/hooks/useImageOrder";
+
+const ALL_CATEGORIES = [
+  { slug: "concert",  label: "Concert" },
+  { slug: "wildlife", label: "Wildlife" },
+  { slug: "travel",   label: "Travel" },
+  { slug: "event",    label: "Event" },
+  { slug: "portrait", label: "Portrait" },
+  { slug: "street",   label: "Street" },
+];
 
 export default function GalleryPage({ params }: { params: Promise<{ category: string }> }) {
   const { category } = use(params);
@@ -50,6 +60,8 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
       ? `/images/${category}/${images[selectedIndex]}`
       : null;
 
+  const otherCategories = ALL_CATEGORIES.filter(c => c.slug !== category);
+
   return (
     <PageTransition>
       <main className="min-h-screen" style={{ background: "var(--bg)", color: "var(--fg)" }}>
@@ -66,11 +78,7 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
           </p>
           <h1
             className="font-light capitalize leading-none"
-            style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "clamp(3.5rem, 10vw, 8rem)",
-              letterSpacing: "-0.01em",
-            }}
+            style={{ fontFamily: "var(--font-display)", fontSize: "clamp(3.5rem, 10vw, 8rem)", letterSpacing: "-0.01em" }}
           >
             {category}
           </h1>
@@ -84,29 +92,12 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
                 >
                   {images.length} {images.length === 1 ? "frame" : "frames"}
                 </p>
-                {/* Slideshow / book-mode button */}
                 <button
                   onClick={() => openImage(0)}
                   className="flex items-center gap-2 text-[10px] tracking-[0.3em] uppercase transition-colors hover:text-white"
-                  style={{
-                    color: "#9a9a9a",
-                    fontFamily: "var(--font-body)",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    padding: 0,
-                  }}
+                  style={{ color: "#9a9a9a", fontFamily: "var(--font-body)", background: "none", border: "none", cursor: "pointer", padding: 0 }}
                 >
-                  <span style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: "20px",
-                    height: "20px",
-                    borderRadius: "50%",
-                    border: "1px solid currentColor",
-                    fontSize: "8px",
-                  }}>▶</span>
+                  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "20px", height: "20px", borderRadius: "50%", border: "1px solid currentColor", fontSize: "8px" }}>▶</span>
                   Slideshow
                 </button>
               </div>
@@ -118,31 +109,48 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
         {/* Gallery */}
         {!loaded ? (
           <div className="flex items-center justify-center py-32">
-            <div
-              className="w-8 h-8 rounded-full border-t animate-spin"
-              style={{ borderColor: "var(--accent)" }}
-            />
+            <div className="w-8 h-8 rounded-full border-t animate-spin" style={{ borderColor: "var(--accent)" }} />
           </div>
         ) : images.length === 0 ? (
-          <div
-            className="flex flex-col items-center justify-center py-32"
-            style={{ color: "var(--muted)" }}
-          >
+          <div className="flex flex-col items-center justify-center py-32" style={{ color: "var(--muted)" }}>
             <p className="text-5xl mb-4">∅</p>
-            <p
-              className="text-[10px] tracking-widest uppercase"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              No images yet
-            </p>
+            <p className="text-[10px] tracking-widest uppercase" style={{ fontFamily: "var(--font-body)" }}>No images yet</p>
           </div>
         ) : (
-          <MasonryGrid
-            images={images}
-            category={category}
-            onImageClick={openImage}
-            sizeAdjust={sizeAdjust}
-          />
+          <MasonryGrid images={images} category={category} onImageClick={openImage} sizeAdjust={sizeAdjust} />
+        )}
+
+        {/* More categories */}
+        {loaded && (
+          <div
+            className="px-6 md:px-14 py-16 md:py-20"
+            style={{ borderTop: "1px solid var(--border)" }}
+          >
+            <p
+              className="text-[10px] tracking-[0.5em] uppercase mb-8"
+              style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}
+            >
+              More categories
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {otherCategories.map((cat) => (
+                <Link
+                  key={cat.slug}
+                  href={`/gallery/${cat.slug}`}
+                  className="text-[10px] tracking-[0.3em] uppercase transition-all duration-300 hover:text-white hover:border-white"
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    color: "#8a8a8a",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    padding: "9px 18px",
+                    borderRadius: "100px",
+                  }}
+                >
+                  {cat.label}
+                </Link>
+              ))}
+            </div>
+          </div>
         )}
 
         <AnimatePresence>
@@ -152,16 +160,8 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
               category={category}
               index={selectedIndex ?? 0}
               onClose={closeImage}
-              onPrev={
-                selectedIndex !== null && selectedIndex > 0
-                  ? () => openImage(selectedIndex - 1)
-                  : undefined
-              }
-              onNext={
-                selectedIndex !== null && selectedIndex < images.length - 1
-                  ? () => openImage(selectedIndex + 1)
-                  : undefined
-              }
+              onPrev={selectedIndex !== null && selectedIndex > 0 ? () => openImage(selectedIndex - 1) : undefined}
+              onNext={selectedIndex !== null && selectedIndex < images.length - 1 ? () => openImage(selectedIndex + 1) : undefined}
               hasPrev={selectedIndex !== null && selectedIndex > 0}
               hasNext={selectedIndex !== null && selectedIndex < images.length - 1}
             />
