@@ -10,8 +10,12 @@ export default function Footer() {
       <div className="flex items-center gap-6">
         <a href="https://instagram.com/cryptic.frames" target="_blank" rel="noopener noreferrer"
           className="text-[10px] tracking-widest uppercase text-neutral-400 hover:text-[#b8966a] transition-colors"
-          style={{ fontFamily: "var(--font-body)" }}>
-          Instagram
+          style={{
+            fontFamily: "var(--font-body)",
+            padding: "10px 0",        // 44px tap height — mobile accessibility
+            display: "inline-block",
+          }}>
+          Instagram ↗
         </a>
       </div>
     </footer>
