@@ -103,7 +103,7 @@ export default function Home() {
             Sharad <em>Rajput</em>
           </h2>
           <p className="text-base leading-relaxed mb-8" style={{ color: "#c8c0b4", maxWidth: "560px", lineHeight: "1.85" }}>
-            Delhi-based, self-taught, working across six genres — from concert pits to quiet wildlife blinds. Member of Confluenz, GGSIPU&apos;s student photography collective.
+            Self-taught. Six genres. Drawn to moments that exist for a fraction of a second — whether that&apos;s a peacock mid-display or a guitarist lost in the set.
           </p>
           <Link href="/about"
             className="inline-flex items-center gap-2 text-[10px] tracking-[0.4em] uppercase pb-px hover:opacity-70 transition-opacity"
@@ -124,7 +124,7 @@ export default function Home() {
               Let&apos;s make<br />something real
             </h2>
             <p className="text-sm" style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>
-              Concerts, portraits, events, fashion, travel. Open to commissions and collaborations.
+              Concerts, portraits, events, wildlife, travel. Open to commissions and collaborations.
             </p>
           </div>
           <ContactForm />

@@ -18,6 +18,12 @@ export const metadata: Metadata = {
     description: "Delhi-based, self-taught. Six genres. From concert pits to wildlife blinds.",
     images: ["/images/hero.jpg"],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "About — cryptic.frames",
+    description: "Delhi-based, self-taught. Six genres. From concert pits to wildlife blinds.",
+    images: ["/images/hero.jpg"],
+  },
 };
 
 const STATS = [
@@ -233,7 +239,7 @@ export default function AboutPage() {
                 </h3>
                 <p
                   style={{
-                    color: "#6a6a6a",
+                    color: "#9a9a9a",
                     fontFamily: "var(--font-body)",
                     fontSize: "0.7rem",
                     letterSpacing: "0.05em",
@@ -244,7 +250,7 @@ export default function AboutPage() {
                 </p>
                 <p
                   style={{
-                    color: "#4a4a4a",
+                    color: "#8a8a8a",
                     fontFamily: "var(--font-body)",
                     fontSize: "0.65rem",
                     letterSpacing: "0.05em",
@@ -280,7 +286,7 @@ export default function AboutPage() {
                 </p>
                 <p
                   className="text-[10px] tracking-[0.3em] uppercase"
-                  style={{ color: "#5a5a5a", fontFamily: "var(--font-body)" }}
+                  style={{ color: "#8a8a8a", fontFamily: "var(--font-body)" }}
                 >
                   {stat.label}
                 </p>
@@ -304,12 +310,12 @@ export default function AboutPage() {
                 <div key={i} className="flex items-baseline gap-3">
                   <span
                     className="text-[9px] tracking-[0.3em] uppercase"
-                    style={{ color: "#4a4a4a", fontFamily: "var(--font-body)", minWidth: "32px" }}
+                    style={{ color: "#7a7a7a", fontFamily: "var(--font-body)", minWidth: "32px" }}
                   >
                     {g.kind}
                   </span>
                   <span
-                    style={{ color: "#a8a09a", fontFamily: "var(--font-body)", fontSize: "0.82rem" }}
+                    style={{ color: "#c8c0b4", fontFamily: "var(--font-body)", fontSize: "0.82rem" }}
                   >
                     {g.item}
                   </span>
@@ -317,6 +323,32 @@ export default function AboutPage() {
               ))}
             </div>
           </div>
+        </section>
+
+        {/* See the work CTA */}
+        <section
+          className="px-8 md:px-14 py-16 md:py-20 flex items-center justify-between flex-wrap gap-6"
+          style={{ borderTop: "1px solid var(--border)" }}
+        >
+          <p
+            className="font-light"
+            style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.8rem, 4vw, 3rem)", color: "var(--fg)" }}
+          >
+            Ready to see the work?
+          </p>
+          <Link
+            href="/#categories"
+            className="flex items-center gap-3 text-[10px] tracking-[0.3em] uppercase transition-all duration-300 hover:gap-5"
+            style={{
+              color: "var(--accent)",
+              fontFamily: "var(--font-body)",
+              border: "1px solid var(--accent)",
+              padding: "12px 24px",
+              borderRadius: "100px",
+            }}
+          >
+            Browse the gallery →
+          </Link>
         </section>
 
         <Footer />
