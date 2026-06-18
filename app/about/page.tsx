@@ -84,7 +84,7 @@ export default function AboutPage() {
           {hasPhoto && (
             <div
               className="relative lg:sticky lg:top-0 lg:h-screen w-full lg:w-[44%] shrink-0 overflow-hidden"
-              style={{ minHeight: "50vw" }}
+              style={{ minHeight: "75vw" }}
             >
               {aboutImages.map((src, i) => (
                 <img
@@ -118,7 +118,7 @@ export default function AboutPage() {
 
           {/* Right — name + bio */}
           <div
-            className={`flex flex-col justify-center px-8 md:px-14 pt-32 lg:pt-0 pb-16 ${hasPhoto ? "lg:w-[56%]" : "w-full max-w-4xl mx-auto"}`}
+            className={`flex flex-col justify-center px-8 md:px-14 pt-6 lg:pt-0 pb-16 ${hasPhoto ? "lg:w-[56%]" : "w-full max-w-4xl mx-auto"}`}
           >
             {/* Eyebrow */}
             <p
@@ -149,9 +149,9 @@ export default function AboutPage() {
             {/* Bio */}
             <div
               className="reveal reveal-delay-1 space-y-5"
-              style={{ color: "#8a8580", fontFamily: "var(--font-body)", fontSize: "0.875rem", lineHeight: "2", maxWidth: "480px" }}
+              style={{ color: "#8a8580", fontFamily: "var(--font-body)", fontSize: "0.875rem", lineHeight: "1.65", maxWidth: "480px" }}
             >
-              <p style={{ color: "#c8c0b4", fontSize: "0.95rem", lineHeight: "1.9" }}>
+              <p style={{ color: "#c8c0b4", fontSize: "0.95rem", lineHeight: "1.65" }}>
                 Photography found me before I found it. Handed a phone at a family function as a child,
                 I composed frames without knowing what composition was. The instinct was always there.
               </p>
