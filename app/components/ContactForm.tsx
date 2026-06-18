@@ -132,12 +132,6 @@ export default function ContactForm() {
           {status === "sending" && "Sending..."}
           {status === "error" && "Something went wrong — try again"}
         </button>
-
-        <a href="mailto:sharadrajput7042568316@gmail.com"
-          className="text-[10px] tracking-widest uppercase underline underline-offset-4 transition-colors hover:text-white"
-          style={{ color: "var(--muted)", fontFamily: "var(--font-body)" }}>
-          Email directly
-        </a>
       </div>
     </div>
   );
