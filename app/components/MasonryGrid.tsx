@@ -5,7 +5,6 @@ import { useIsMobile } from "@/app/hooks/useIsMobile";
 
 const GAP = 6;
 
-// Fixed column counts per device, indexed by sizeAdjust (-1 = Large, 0 = Medium, 1 = Small)
 const MOBILE_COLS: Record<number, number> = { [-1]: 1, 0: 1, 1: 2 };
 const DESKTOP_COLS: Record<number, number> = { [-1]: 2, 0: 3, 1: 4 };
 
@@ -83,7 +82,7 @@ function MasonryItem({
       className="relative overflow-hidden cursor-pointer group"
       style={{
         width: "100%",
-        background: loaded ? "transparent" : "var(--muted, #2a2a2a)",
+        background: loaded ? "transparent" : "#1a1a1a",
         opacity: loaded ? 1 : 0.7,
         transition: "opacity 0.4s ease",
       }}
@@ -98,20 +97,25 @@ function MasonryItem({
           display: "block",
           width: "100%",
           height: "auto",
-          transition: "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), brightness 0.3s ease",
+          transform: "scale(1)",
+          transition: "transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s ease",
           willChange: "transform",
         }}
-        className="group-hover:brightness-110"
+        className="group-hover:scale-[1.04] group-hover:brightness-105"
       />
+      {/* Expand icon on hover */}
       <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center"
-        style={{ background: "rgba(6,6,6,0.18)" }}
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-end p-3"
       >
         <div
-          className="w-9 h-9 rounded-full border flex items-center justify-center"
-          style={{ borderColor: "rgba(255,255,255,0.4)" }}
+          className="w-7 h-7 rounded-full flex items-center justify-center"
+          style={{
+            background: "rgba(6,6,6,0.55)",
+            border: "1px solid rgba(255,255,255,0.25)",
+            backdropFilter: "blur(4px)",
+          }}
         >
-          <span className="text-white text-xs">⤢</span>
+          <span className="text-white" style={{ fontSize: "9px" }}>⤢</span>
         </div>
       </div>
     </div>
