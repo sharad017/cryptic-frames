@@ -29,10 +29,8 @@ export default function HeroText() {
         silence, motion, and light.
       </p>
 
-      {/* CTAs — stack vertically on very small screens */}
-      <div className="hero-line-4 flex flex-col xs:flex-row items-start xs:items-center gap-4 xs:gap-8"
-        style={{ flexDirection: "column" }}
-      >
+      {/* CTAs — row on desktop, column on mobile only */}
+      <div className="hero-line-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8">
         <a href="#categories"
           className="group flex items-center gap-3 transition-all duration-300 hover:bg-white hover:text-black"
           style={{
@@ -51,7 +49,7 @@ export default function HeroText() {
         </a>
       </div>
 
-      {/* Scroll to Explore — right side */}
+      {/* Scroll indicator */}
       <div className="hero-line-4 absolute right-6 md:right-10 bottom-8 md:bottom-14 flex flex-col items-center gap-3">
         <span className="uppercase"
           style={{ fontFamily: "var(--font-body)", fontSize: "0.48rem", letterSpacing: "0.35em", color: "rgba(232,226,217,0.2)", writingMode: "vertical-rl" }}>

@@ -16,8 +16,6 @@ export default function CustomCursor() {
     const onMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-
-      // Snap to position on first move so cursor doesn't slide in from (0,0)
       if (!hasMovedOnce) {
         curX = mouseX;
         curY = mouseY;
@@ -27,8 +25,9 @@ export default function CustomCursor() {
     };
 
     const tick = () => {
-      curX += (mouseX - curX) * 0.18;
-      curY += (mouseY - curY) * 0.18;
+      // 0.35 = snappy but still smooth. 0.18 was too sluggish.
+      curX += (mouseX - curX) * 0.35;
+      curY += (mouseY - curY) * 0.35;
       cursor.style.left = curX + "px";
       cursor.style.top = curY + "px";
       raf = requestAnimationFrame(tick);
@@ -36,8 +35,6 @@ export default function CustomCursor() {
 
     const onEnter = () => cursor.classList.add("hovering");
     const onLeave = () => cursor.classList.remove("hovering");
-
-    // Hide cursor when it leaves the window
     const onMouseLeave = () => cursor.classList.remove("visible");
     const onMouseEnter = () => hasMovedOnce && cursor.classList.add("visible");
 
@@ -46,7 +43,6 @@ export default function CustomCursor() {
     document.addEventListener("mouseenter", onMouseEnter);
     raf = requestAnimationFrame(tick);
 
-    // Attach hover listeners — runs once on mount for all current elements
     const addHover = () => {
       document.querySelectorAll("a, button, [data-cursor]").forEach((el) => {
         el.addEventListener("mouseenter", onEnter);
@@ -55,7 +51,6 @@ export default function CustomCursor() {
     };
     addHover();
 
-    // Re-attach on DOM changes (e.g. lightbox opening adds new buttons)
     const observer = new MutationObserver(addHover);
     observer.observe(document.body, { childList: true, subtree: true });
 
