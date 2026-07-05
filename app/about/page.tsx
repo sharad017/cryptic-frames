@@ -115,16 +115,16 @@ export default function AboutPage() {
               </div>
 
               {/* Stats */}
-              <div className="reveal reveal-delay-1 grid grid-cols-4 gap-4 mb-10 pb-10"
+              <div className="reveal reveal-delay-1 grid grid-cols-2 md:grid-cols-4 gap-6 mb-10 pb-10"
                 style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                 {STATS.map((s) => (
                   <div key={s.label}>
                     <p className="font-light mb-1"
-                      style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.4rem, 2.5vw, 2rem)", color: "var(--accent)", lineHeight: 1 }}>
+                      style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.8rem, 3vw, 2.6rem)", color: "var(--accent)", lineHeight: 1 }}>
                       {s.num}
                     </p>
-                    <p className="text-[9px] tracking-[0.25em] uppercase"
-                      style={{ color: "#6a6a6a", fontFamily: "var(--font-body)" }}>
+                    <p className="text-[10px] tracking-[0.2em] uppercase"
+                      style={{ color: "#8a8a8a", fontFamily: "var(--font-body)" }}>
                       {s.label}
                     </p>
                   </div>
@@ -142,11 +142,11 @@ export default function AboutPage() {
                   {NOTABLE.map((n, i) => (
                     <div key={i} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
                       <span className="font-light shrink-0"
-                        style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.1rem, 2vw, 1.5rem)", color: "var(--fg)" }}>
+                        style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.4rem, 2.5vw, 2rem)", color: "var(--fg)" }}>
                         {n.artist}
                       </span>
-                      <span className="text-[10px] tracking-wide"
-                        style={{ color: "#6a6a6a", fontFamily: "var(--font-body)" }}>
+                      <span className="text-[11px] tracking-wide"
+                        style={{ color: "#8a8a8a", fontFamily: "var(--font-body)" }}>
                         {n.venue}
                       </span>
                     </div>
@@ -165,10 +165,10 @@ export default function AboutPage() {
                   {GEAR.map((g, i) => (
                     <div key={i} className="flex items-baseline gap-4">
                       <span className="text-[9px] tracking-[0.3em] uppercase shrink-0"
-                        style={{ color: "#5a5a5a", fontFamily: "var(--font-body)", minWidth: "36px" }}>
+                        style={{ color: "#7a7a7a", fontFamily: "var(--font-body)", minWidth: "36px" }}>
                         {g.kind}
                       </span>
-                      <span style={{ color: "#c8c0b4", fontFamily: "var(--font-body)", fontSize: "0.82rem" }}>
+                      <span style={{ color: "#c8c0b4", fontFamily: "var(--font-body)", fontSize: "0.92rem" }}>
                         {g.item}
                       </span>
                     </div>
