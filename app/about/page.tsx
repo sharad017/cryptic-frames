@@ -11,8 +11,7 @@ import AboutPortrait from "../components/AboutPortrait";
 
 export const metadata: Metadata = {
   title: "About — cryptic.frames",
-  description:
-    "Sharad Rajput is a Delhi-based, self-taught photographer working across concert, wildlife, travel, portrait, street, and event photography under the name cryptic.frames.",
+  description: "Sharad Rajput is a Delhi-based, self-taught photographer working across concert, wildlife, travel, portrait, street, and event photography.",
   openGraph: {
     title: "About — cryptic.frames",
     description: "Delhi-based, self-taught. Six genres. From concert pits to wildlife blinds.",
@@ -28,9 +27,9 @@ export const metadata: Metadata = {
 
 const STATS = [
   { num: "6",     label: "Genres" },
+  { num: "2023",  label: "Since" },
   { num: "Delhi", label: "Based in" },
-  { num: "2023",  label: "Shooting since" },
-  { num: "∞",    label: "Frames remaining" },
+  { num: "∞",    label: "Frames left" },
 ];
 
 const GEAR = [
@@ -39,28 +38,18 @@ const GEAR = [
 ];
 
 const NOTABLE = [
-  {
-    artist: "Silver Lining",
-    venue: "Piano Man Jazz Club",
-    location: "Gurgaon",
-  },
-  {
-    artist: "Desmadre Orchestra",
-    venue: "Piano Man Jazz Club",
-    location: "Eldeco Centre, Malviya Nagar",
-  },
+  { artist: "Silver Lining",      venue: "Piano Man Jazz Club, Gurgaon" },
+  { artist: "Desmadre Orchestra", venue: "Piano Man, Eldeco Centre, Malviya Nagar" },
 ];
 
 function getManifest(): Record<string, string[]> {
-  try {
-    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "public/images/manifest.json"), "utf-8"));
-  } catch { return {}; }
+  try { return JSON.parse(fs.readFileSync(path.join(process.cwd(), "public/images/manifest.json"), "utf-8")); }
+  catch { return {}; }
 }
 
 function getOrder(): Record<string, string[]> {
-  try {
-    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "public/images/order.json"), "utf-8"));
-  } catch { return {}; }
+  try { return JSON.parse(fs.readFileSync(path.join(process.cwd(), "public/images/order.json"), "utf-8")); }
+  catch { return {}; }
 }
 
 function getAboutImages(): string[] {
@@ -74,7 +63,6 @@ function getAboutImages(): string[] {
 
 export default function AboutPage() {
   const aboutImages = getAboutImages().map((f) => `/images/about/${f}`);
-  const hasPhoto = aboutImages.length > 0;
 
   return (
     <PageTransition>
@@ -83,272 +71,132 @@ export default function AboutPage() {
         <Navbar />
         <ScrollReveal />
 
-        {/* ── HERO — split screen ── */}
-        <section className="min-h-screen flex flex-col lg:flex-row">
+        <section className="px-6 md:px-14 pt-28 md:pt-36 pb-20 md:pb-28">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-start max-w-6xl">
 
-          {/* Left — photo panel, sticky on scroll */}
-          {hasPhoto && (
-            <div
-              className="relative lg:sticky lg:top-0 lg:h-screen w-full lg:w-[44%] shrink-0 overflow-hidden"
-              style={{ minHeight: "75vw" }}
-            >
-              {aboutImages.map((src, i) => (
-                <img
-                  key={src}
-                  src={src}
-                  alt="Sharad Rajput — cryptic.frames photographer"
-                  className="absolute inset-0 w-full h-full object-cover object-top"
-                  style={{
-                    opacity: i === 0 ? 1 : 0,
-                    transition: "opacity 1.4s ease-in-out",
-                  }}
-                  loading="eager"
-                />
-              ))}
-              {/* Subtle right-side fade to blend into the dark right panel */}
-              <div
-                className="absolute inset-0 hidden lg:block"
-                style={{
-                  background: "linear-gradient(to right, transparent 70%, var(--bg) 100%)",
-                }}
-              />
-              {/* Bottom fade on mobile */}
-              <div
-                className="absolute inset-0 block lg:hidden"
-                style={{
-                  background: "linear-gradient(to bottom, transparent 60%, var(--bg) 100%)",
-                }}
-              />
-            </div>
-          )}
+            {/* LEFT — photo, no cropping */}
+            {aboutImages.length > 0 && (
+              <div className="reveal order-1">
+                <AboutPortrait images={aboutImages} />
+              </div>
+            )}
 
-          {/* Right — name + bio */}
-          <div
-            className={`flex flex-col justify-center px-8 md:px-14 pt-6 lg:pt-0 pb-16 ${hasPhoto ? "lg:w-[56%]" : "w-full max-w-4xl mx-auto"}`}
-          >
-            {/* Eyebrow */}
-            <p
-              className="reveal text-[10px] tracking-[0.5em] uppercase mb-5"
-              style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}
-            >
-              The Photographer
-            </p>
+            {/* RIGHT — all info stacked */}
+            <div className={`order-2 ${aboutImages.length === 0 ? "lg:col-span-2" : ""}`}>
 
-            {/* Name */}
-            <h1
-              className="reveal font-light leading-[0.9] mb-8"
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: hasPhoto ? "clamp(3rem, 6vw, 6.5rem)" : "clamp(4rem, 10vw, 10rem)",
-                letterSpacing: "-0.01em",
-              }}
-            >
-              Sharad<br /><em>Rajput</em>
-            </h1>
-
-            {/* Gold line */}
-            <div
-              className="reveal mb-8"
-              style={{ width: "clamp(2rem, 5vw, 4rem)", height: "1px", background: "var(--accent)" }}
-            />
-
-            {/* Bio */}
-            <div
-              className="reveal reveal-delay-1 space-y-5"
-              style={{ color: "#8a8580", fontFamily: "var(--font-body)", fontSize: "0.875rem", lineHeight: "1.65", maxWidth: "480px" }}
-            >
-              <p style={{ color: "#c8c0b4", fontSize: "0.95rem", lineHeight: "1.65" }}>
-                Photography found me before I found it. Handed a phone at a family function as a child,
-                I composed frames without knowing what composition was. The instinct was always there.
-              </p>
-              <p>
-                Self-taught through obsessive attention — studying light, dissecting edits,
-                analysing why one frame works and another doesn&apos;t. No formal training.
-                Just relentless repetition.
-              </p>
-              <p>
-                In college, I joined{" "}
-                <em style={{ color: "#c8c0b4" }}>Confluenz</em> — GGSIPU&apos;s student
-                photography collective — and spent a year covering everything from intimate
-                portrait sessions to high-energy concert pits.
-              </p>
-              <p>Currently based in Delhi. Open to work across India and beyond.</p>
-            </div>
-
-            {/* CTAs */}
-            <div className="reveal reveal-delay-2 flex flex-wrap items-center gap-8 mt-10">
-              <a
-                href="https://instagram.com/cryptic.frames"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[10px] tracking-[0.4em] uppercase pb-px hover:opacity-70 transition-opacity"
-                style={{ color: "var(--accent)", borderBottom: "1px solid var(--accent)", fontFamily: "var(--font-body)" }}
-              >
-                Instagram ↗
-              </a>
-              <Link
-                href="/#contact"
-                className="text-[10px] tracking-[0.4em] uppercase transition-colors hover:text-white"
-                style={{ color: "#6a6a6a", fontFamily: "var(--font-body)" }}
-              >
-                Commission a shoot →
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* ── NOTABLE SHOOTS ── */}
-        <section
-          className="px-8 md:px-14 py-16 md:py-24"
-          style={{ borderTop: "1px solid var(--border)" }}
-        >
-          <p
-            className="reveal text-[10px] tracking-[0.5em] uppercase mb-10"
-            style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}
-          >
-            Notable shoots
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl">
-            {NOTABLE.map((n, i) => (
-              <div
-                key={i}
-                className="reveal"
-                style={{
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  borderRadius: "16px",
-                  padding: "1.5rem 1.75rem",
-                  background: "rgba(255,255,255,0.025)",
-                }}
-              >
-                <p
-                  className="text-[9px] tracking-[0.4em] uppercase mb-4"
-                  style={{ color: "var(--accent)", fontFamily: "var(--font-body)", opacity: 0.7 }}
-                >
-                  Live Performance
+              {/* Eyebrow + Name */}
+              <div className="reveal mb-8">
+                <p className="text-[10px] tracking-[0.5em] uppercase mb-4"
+                  style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
+                  The Photographer
                 </p>
-                <h3
-                  className="font-light mb-2"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
-                    lineHeight: 1,
-                    color: "var(--fg)",
-                  }}
-                >
-                  {n.artist}
-                </h3>
-                <p
-                  style={{
-                    color: "#9a9a9a",
-                    fontFamily: "var(--font-body)",
-                    fontSize: "0.7rem",
-                    letterSpacing: "0.05em",
-                    marginTop: "8px",
-                  }}
-                >
-                  {n.venue}
+                <h1 className="font-light leading-[0.9]"
+                  style={{ fontFamily: "var(--font-display)", fontSize: "clamp(3rem, 6vw, 5.5rem)" }}>
+                  Sharad<br /><em>Rajput</em>
+                </h1>
+              </div>
+
+              {/* Gold line */}
+              <div className="reveal mb-8"
+                style={{ width: "clamp(2rem, 4vw, 3rem)", height: "1px", background: "var(--accent)" }} />
+
+              {/* Bio */}
+              <div className="reveal reveal-delay-1 space-y-4 mb-10"
+                style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", lineHeight: "1.85", maxWidth: "480px" }}>
+                <p style={{ color: "#c8c0b4" }}>
+                  Self-taught. Six genres. Drawn to moments that exist for a fraction of a second — whether that&apos;s a peacock mid-display or a guitarist lost in the set.
                 </p>
-                <p
-                  style={{
-                    color: "#8a8a8a",
-                    fontFamily: "var(--font-body)",
-                    fontSize: "0.65rem",
-                    letterSpacing: "0.05em",
-                    marginTop: "3px",
-                  }}
-                >
-                  {n.location}
+                <p style={{ color: "#7a7570" }}>
+                  In college, I joined <em style={{ color: "#c8c0b4" }}>Confluenz</em> — GGSIPU&apos;s student photography collective — and spent a year covering everything from intimate portrait sessions to high-energy concert pits. That year compressed what might have taken five.
+                </p>
+                <p style={{ color: "#7a7570" }}>
+                  Currently based in Delhi. Open to work across India and beyond.
                 </p>
               </div>
-            ))}
-          </div>
-        </section>
 
-        {/* ── STATS + GEAR ── */}
-        <section
-          className="px-8 md:px-14 py-16 md:py-24"
-          style={{ borderTop: "1px solid var(--border)" }}
-        >
-          {/* Stats row */}
-          <div className="reveal grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
-            {STATS.map((stat) => (
-              <div key={stat.label}>
-                <p
-                  className="font-light mb-2"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "clamp(2.2rem, 4vw, 3.5rem)",
-                    color: "var(--accent)",
-                    lineHeight: 1,
-                  }}
-                >
-                  {stat.num}
-                </p>
-                <p
-                  className="text-[10px] tracking-[0.3em] uppercase"
-                  style={{ color: "#8a8a8a", fontFamily: "var(--font-body)" }}
-                >
-                  {stat.label}
-                </p>
+              {/* Stats */}
+              <div className="reveal reveal-delay-1 grid grid-cols-4 gap-4 mb-10 pb-10"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                {STATS.map((s) => (
+                  <div key={s.label}>
+                    <p className="font-light mb-1"
+                      style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.4rem, 2.5vw, 2rem)", color: "var(--accent)", lineHeight: 1 }}>
+                      {s.num}
+                    </p>
+                    <p className="text-[9px] tracking-[0.25em] uppercase"
+                      style={{ color: "#6a6a6a", fontFamily: "var(--font-body)" }}>
+                      {s.label}
+                    </p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Gear */}
-          <div
-            className="reveal pt-10"
-            style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
-          >
-            <p
-              className="text-[10px] tracking-[0.4em] uppercase mb-6"
-              style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}
-            >
-              Gear
-            </p>
-            <div className="flex flex-wrap gap-x-12 gap-y-3">
-              {GEAR.map((g, i) => (
-                <div key={i} className="flex items-baseline gap-3">
-                  <span
-                    className="text-[9px] tracking-[0.3em] uppercase"
-                    style={{ color: "#7a7a7a", fontFamily: "var(--font-body)", minWidth: "32px" }}
-                  >
-                    {g.kind}
-                  </span>
-                  <span
-                    style={{ color: "#c8c0b4", fontFamily: "var(--font-body)", fontSize: "0.82rem" }}
-                  >
-                    {g.item}
-                  </span>
+              {/* Notable shoots */}
+              <div className="reveal reveal-delay-2 mb-10 pb-10"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                <p className="text-[9px] tracking-[0.4em] uppercase mb-5"
+                  style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
+                  Notable shoots
+                </p>
+                <div className="space-y-4">
+                  {NOTABLE.map((n, i) => (
+                    <div key={i} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+                      <span className="font-light shrink-0"
+                        style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.1rem, 2vw, 1.5rem)", color: "var(--fg)" }}>
+                        {n.artist}
+                      </span>
+                      <span className="text-[10px] tracking-wide"
+                        style={{ color: "#6a6a6a", fontFamily: "var(--font-body)" }}>
+                        {n.venue}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
+              </div>
 
-        {/* See the work CTA */}
-        <section
-          className="px-8 md:px-14 py-16 md:py-20 flex items-center justify-between flex-wrap gap-6"
-          style={{ borderTop: "1px solid var(--border)" }}
-        >
-          <p
-            className="font-light"
-            style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.8rem, 4vw, 3rem)", color: "var(--fg)" }}
-          >
-            Ready to see the work?
-          </p>
-          <Link
-            href="/#categories"
-            className="flex items-center gap-3 text-[10px] tracking-[0.3em] uppercase transition-all duration-300 hover:gap-5"
-            style={{
-              color: "var(--accent)",
-              fontFamily: "var(--font-body)",
-              border: "1px solid var(--accent)",
-              padding: "12px 24px",
-              borderRadius: "100px",
-            }}
-          >
-            Browse the gallery →
-          </Link>
+              {/* Gear */}
+              <div className="reveal reveal-delay-2 mb-10 pb-10"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                <p className="text-[9px] tracking-[0.4em] uppercase mb-5"
+                  style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
+                  Gear
+                </p>
+                <div className="space-y-2">
+                  {GEAR.map((g, i) => (
+                    <div key={i} className="flex items-baseline gap-4">
+                      <span className="text-[9px] tracking-[0.3em] uppercase shrink-0"
+                        style={{ color: "#5a5a5a", fontFamily: "var(--font-body)", minWidth: "36px" }}>
+                        {g.kind}
+                      </span>
+                      <span style={{ color: "#c8c0b4", fontFamily: "var(--font-body)", fontSize: "0.82rem" }}>
+                        {g.item}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* CTAs */}
+              <div className="reveal reveal-delay-2 flex flex-wrap items-center gap-8">
+                <a href="https://instagram.com/cryptic.frames" target="_blank" rel="noopener noreferrer"
+                  className="text-[10px] tracking-[0.4em] uppercase pb-px hover:opacity-70 transition-opacity"
+                  style={{ color: "var(--accent)", borderBottom: "1px solid var(--accent)", fontFamily: "var(--font-body)" }}>
+                  Instagram ↗
+                </a>
+                <Link href="/#contact"
+                  className="text-[10px] tracking-[0.4em] uppercase transition-colors hover:text-white"
+                  style={{ color: "#6a6a6a", fontFamily: "var(--font-body)" }}>
+                  Commission a shoot →
+                </Link>
+                <Link href="/#categories"
+                  className="text-[10px] tracking-[0.4em] uppercase transition-colors hover:text-white"
+                  style={{ color: "#6a6a6a", fontFamily: "var(--font-body)" }}>
+                  Browse the gallery →
+                </Link>
+              </div>
+            </div>
+
+          </div>
         </section>
 
         <Footer />
