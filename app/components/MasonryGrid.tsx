@@ -76,10 +76,11 @@ function MasonryItem({
   onClick: (idx: number) => void;
 }) {
   const [loaded, setLoaded] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   return (
     <div
-      className="relative overflow-hidden cursor-pointer group"
+      className="relative overflow-hidden cursor-pointer"
       style={{
         width: "100%",
         background: loaded ? "transparent" : "#1a1a1a",
@@ -87,6 +88,8 @@ function MasonryItem({
         transition: "opacity 0.4s ease",
       }}
       onClick={() => onClick(index)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <img
         src={src}
@@ -97,26 +100,32 @@ function MasonryItem({
           display: "block",
           width: "100%",
           height: "auto",
-          transform: "scale(1)",
-          transition: "transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s ease",
+          transform: hovered ? "scale(1.04)" : "scale(1)",
+          filter: hovered ? "brightness(1.06)" : "brightness(1)",
+          transition: "transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.5s ease",
           willChange: "transform",
         }}
-        className="group-hover:scale-[1.04] group-hover:brightness-105"
       />
-      {/* Expand icon on hover */}
+      {/* Expand icon — bottom right, fades in on hover */}
       <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-end p-3"
+        style={{
+          position: "absolute",
+          bottom: "10px",
+          right: "10px",
+          width: "28px",
+          height: "28px",
+          borderRadius: "50%",
+          background: "rgba(6,6,6,0.55)",
+          border: "1px solid rgba(255,255,255,0.2)",
+          backdropFilter: "blur(4px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          opacity: hovered ? 1 : 0,
+          transition: "opacity 0.3s ease",
+        }}
       >
-        <div
-          className="w-7 h-7 rounded-full flex items-center justify-center"
-          style={{
-            background: "rgba(6,6,6,0.55)",
-            border: "1px solid rgba(255,255,255,0.25)",
-            backdropFilter: "blur(4px)",
-          }}
-        >
-          <span className="text-white" style={{ fontSize: "9px" }}>⤢</span>
-        </div>
+        <span style={{ color: "white", fontSize: "9px" }}>⤢</span>
       </div>
     </div>
   );
