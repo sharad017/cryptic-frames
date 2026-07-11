@@ -10,6 +10,7 @@ import CustomCursor from "@/app/components/CustomCursor";
 import MasonryGrid from "@/app/components/MasonryGrid";
 import SizeToggle from "@/app/components/SizeToggle";
 import { useGridSize } from "@/app/hooks/useGridSize";
+import BackToTop from "@/app/components/BackToTop";
 import { fetchOrderedImages } from "@/app/hooks/useImageOrder";
 
 const ALL_CATEGORIES = [
@@ -74,7 +75,7 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
             className="text-[10px] tracking-[0.5em] uppercase mb-3"
             style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}
           >
-            Category
+            cryptic.frames
           </p>
           <h1
             className="font-light capitalize leading-none"
@@ -152,6 +153,9 @@ export default function GalleryPage({ params }: { params: Promise<{ category: st
             </div>
           </div>
         )}
+
+        {/* Back to top — appears after scrolling */}
+        <BackToTop />
 
         <AnimatePresence>
           {selectedImage && (

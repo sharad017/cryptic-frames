@@ -15,13 +15,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: "About — cryptic.frames",
     description: "Delhi-based, self-taught. Six genres. From concert pits to wildlife blinds.",
-    images: ["/images/hero.jpg"],
+    images: ["/images/about/about_image_.jpg"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "About — cryptic.frames",
-    description: "Delhi-based, self-taught. Six genres. From concert pits to wildlife blinds.",
-    images: ["/images/hero.jpg"],
+    title: "About Sharad Rajput — cryptic.frames",
+    description: "Self-taught photographer based in Delhi. Six genres — concert, wildlife, travel, portrait, street, event.",
+    images: ["/images/about/about_image_.jpg"],
   },
 };
 
