@@ -572,5 +572,101 @@
     "shutter": "1/800s",
     "iso": "ISO 320"
   },
-  "concert/concert duo.webp": {}
+  "concert/concert duo.webp": {},
+  "concert/_DSC7193.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "60mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 8000"
+  },
+  "concert/_DSC7277.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "80mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 8000"
+  },
+  "concert/_DSC7341.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "52mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 2000"
+  },
+  "concert/_DSC7355.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "51mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 1000"
+  },
+  "concert/_DSC7431.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "62mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 2500"
+  },
+  "concert/_DSC7480.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "46mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 2500"
+  },
+  "concert/_DSC7527.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "68mm",
+    "aperture": "f/4",
+    "shutter": "1/80s",
+    "iso": "ISO 1000"
+  },
+  "concert/_DSC7584.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "69mm",
+    "aperture": "f/4",
+    "shutter": "1/13s",
+    "iso": "ISO 100"
+  },
+  "concert/_DSC7824.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "65mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 1000"
+  },
+  "concert/_DSC7859.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "24mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 2500"
+  },
+  "concert/_DSC7876.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "33mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 2000"
+  },
+  "concert/_DSC7904.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "18mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 6400"
+  }
 }
