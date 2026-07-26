@@ -748,5 +748,150 @@
     "aperture": "f/4",
     "shutter": "1/200s",
     "iso": "ISO 6400"
+  },
+  "travel/DSC09897.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "105mm",
+    "aperture": "f/4.5",
+    "shutter": "1/1250s",
+    "iso": "ISO 100"
+  },
+  "travel/DSC09916.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "19mm",
+    "aperture": "f/4.5",
+    "shutter": "1/2500s",
+    "iso": "ISO 100"
+  },
+  "travel/DSC09937.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "88mm",
+    "aperture": "f/4.5",
+    "shutter": "1/2000s",
+    "iso": "ISO 100"
+  },
+  "event/_DSC0917.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "105mm",
+    "aperture": "f/4",
+    "shutter": "1/1000s",
+    "iso": "ISO 100"
+  },
+  "event/_DSC0922.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "105mm",
+    "aperture": "f/4",
+    "shutter": "1/1000s",
+    "iso": "ISO 100"
+  },
+  "event/_DSC0931.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "105mm",
+    "aperture": "f/4",
+    "shutter": "1/1250s",
+    "iso": "ISO 100"
+  },
+  "event/_DSC0932.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "105mm",
+    "aperture": "f/4",
+    "shutter": "1/800s",
+    "iso": "ISO 100"
+  },
+  "event/_DSC0940.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "40mm",
+    "aperture": "f/14",
+    "shutter": "1/250s",
+    "iso": "ISO 200"
+  },
+  "event/_DSC0944.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "105mm",
+    "aperture": "f/5.6",
+    "shutter": "1/400s",
+    "iso": "ISO 100"
+  },
+  "event/_DSC0949.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "105mm",
+    "aperture": "f/7.1",
+    "shutter": "1/800s",
+    "iso": "ISO 100"
+  },
+  "event/_DSC0957.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "105mm",
+    "aperture": "f/13",
+    "shutter": "1/250s",
+    "iso": "ISO 250"
+  },
+  "event/_DSC0967.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "105mm",
+    "aperture": "f/5.6",
+    "shutter": "1/250s",
+    "iso": "ISO 200"
+  },
+  "event/_DSC0973.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "49mm",
+    "aperture": "f/4",
+    "shutter": "1/800s",
+    "iso": "ISO 100"
+  },
+  "portrait/DSC00517.jpg": {},
+  "portrait/DSC01812.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "90mm",
+    "aperture": "f/4.5",
+    "shutter": "1/1000s",
+    "iso": "ISO 800"
+  },
+  "portrait/DSC01814.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "76mm",
+    "aperture": "f/4.5",
+    "shutter": "1/1000s",
+    "iso": "ISO 800"
+  },
+  "street/DSC09957.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "105mm",
+    "aperture": "f/4",
+    "shutter": "1/4000s",
+    "iso": "ISO 500"
+  },
+  "street/DSC09960.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "105mm",
+    "aperture": "f/4",
+    "shutter": "1/4000s",
+    "iso": "ISO 500"
+  },
+  "street/DSC09964.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "105mm",
+    "aperture": "f/13",
+    "shutter": "1/400s",
+    "iso": "ISO 400"
   }
 }
