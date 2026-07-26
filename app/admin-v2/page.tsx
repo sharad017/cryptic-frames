@@ -32,7 +32,7 @@ export default function AdminPage() {
   const [focalSaving, setFocalSaving] = useState<Record<string, SaveStatus>>({});
   const [focalMode, setFocalMode] = useState<"desktop" | "mobile">("mobile");
   const [focalZoom, setFocalZoom] = useState<Record<string, number>>({});
-  const getZoom = (key: string, mode: "mobile" | "desktop") => focalZoom[\`\${key}__\${mode}\`] || 1;
+  const getZoom = (key: string, mode: "mobile" | "desktop") => focalZoom[`${key}__${mode}`] || 1;
 
   // About content state
   const [aboutContent, setAboutContent] = useState({
