@@ -668,5 +668,85 @@
     "aperture": "f/4",
     "shutter": "1/200s",
     "iso": "ISO 6400"
+  },
+  "concert/_DSC0185.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "81mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 6400"
+  },
+  "concert/_DSC0190.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "99mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 5000"
+  },
+  "concert/_DSC0223.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "85mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 3200"
+  },
+  "concert/_DSC0522.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "105mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 6400"
+  },
+  "concert/_DSC0570.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "101mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 6400"
+  },
+  "concert/_DSC0582.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "101mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 6400"
+  },
+  "concert/_DSC0621.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "105mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 3200"
+  },
+  "concert/_DSC0629.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "104mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 2000"
+  },
+  "concert/_DSC0773.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "51mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 6400"
+  },
+  "concert/_DSC0798.jpg": {
+    "camera": "SONY ILCE-6600",
+    "lens": "E PZ 18-105mm F4 G OSS",
+    "focalLength": "105mm",
+    "aperture": "f/4",
+    "shutter": "1/200s",
+    "iso": "ISO 6400"
   }
 }
