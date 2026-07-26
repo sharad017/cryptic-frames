@@ -9,6 +9,7 @@
     "lint": "eslint",
     "generate-manifest": "node scripts/generate-manifest.mjs",
     "generate-alt": "node scripts/generate-alt.mjs",
+    "generate-dimensions": "node scripts/generate-dimensions.mjs",
     "generate-exif": "node scripts/generate-exif.mjs",
     "compress": "node scripts/compress-images.mjs"
   },

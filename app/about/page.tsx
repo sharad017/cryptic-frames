@@ -25,22 +25,40 @@ export const metadata: Metadata = {
   },
 };
 
-const STATS = [
-  { num: "6",     label: "Genres" },
-  { num: "2023",  label: "Since" },
-  { num: "Delhi", label: "Based in" },
-  { num: "∞",    label: "Frames left" },
-];
 
-const GEAR = [
-  { kind: "Body", item: "Sony A6600" },
-  { kind: "Lens", item: "Sony E PZ 18-105mm F4 G OSS" },
-];
 
-const NOTABLE = [
-  { artist: "Silver Lining",      venue: "Piano Man Jazz Club, Gurgaon" },
-  { artist: "Desmadre Orchestra", venue: "Piano Man, Eldeco Centre, Malviya Nagar" },
-];
+type AboutContent = {
+  bio1: string; bio2: string; bio3: string;
+  stat1num: string; stat1label: string;
+  stat2num: string; stat2label: string;
+  stat3num: string; stat3label: string;
+  stat4num: string; stat4label: string;
+  notable1artist: string; notable1venue: string;
+  notable2artist: string; notable2venue: string;
+  gear1kind: string; gear1item: string;
+  gear2kind: string; gear2item: string;
+};
+
+const DEFAULT_CONTENT: AboutContent = {
+  bio1: "Self-taught. Six genres. Drawn to moments that exist for a fraction of a second — whether that's a peacock mid-display or a guitarist lost in the set.",
+  bio2: "In college, I joined Confluenz — GGSIPU's student photography collective — and spent a year covering everything from intimate portrait sessions to high-energy concert pits. That year compressed what might have taken five.",
+  bio3: "{c.bio3}",
+  stat1num: "6", stat1label: "Genres",
+  stat2num: "2023", stat2label: "Since",
+  stat3num: "Delhi", stat3label: "Based in",
+  stat4num: "∞", stat4label: "Frames left",
+  notable1artist: "Silver Lining", notable1venue: "Piano Man Jazz Club, Gurgaon",
+  notable2artist: "Desmadre Orchestra", notable2venue: "Piano Man, Eldeco Centre, Malviya Nagar",
+  gear1kind: "Body", gear1item: "Sony A6600",
+  gear2kind: "Lens", gear2item: "Sony E PZ 18-105mm F4 G OSS",
+};
+
+function getAboutContent(): AboutContent {
+  try {
+    const raw = fs.readFileSync(path.join(process.cwd(), "public/images/about-content.json"), "utf-8");
+    return { ...DEFAULT_CONTENT, ...JSON.parse(raw) };
+  } catch { return DEFAULT_CONTENT; }
+}
 
 function getManifest(): Record<string, string[]> {
   try { return JSON.parse(fs.readFileSync(path.join(process.cwd(), "public/images/manifest.json"), "utf-8")); }
@@ -63,6 +81,7 @@ function getAboutImages(): string[] {
 
 export default function AboutPage() {
   const aboutImages = getAboutImages().map((f) => `/images/about/${f}`);
+  const c = getAboutContent();
 
   return (
     <PageTransition>
@@ -104,20 +123,20 @@ export default function AboutPage() {
               <div className="reveal reveal-delay-1 space-y-4 mb-10"
                 style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", lineHeight: "1.85", maxWidth: "480px" }}>
                 <p style={{ color: "#c8c0b4" }}>
-                  Self-taught. Six genres. Drawn to moments that exist for a fraction of a second — whether that&apos;s a peacock mid-display or a guitarist lost in the set.
+                  {c.bio1}
                 </p>
                 <p style={{ color: "#7a7570" }}>
-                  In college, I joined <em style={{ color: "#c8c0b4" }}>Confluenz</em> — GGSIPU&apos;s student photography collective — and spent a year covering everything from intimate portrait sessions to high-energy concert pits. That year compressed what might have taken five.
+                  {c.bio2}
                 </p>
                 <p style={{ color: "#7a7570" }}>
-                  Currently based in Delhi. Open to work across India and beyond.
+                  {c.bio3}
                 </p>
               </div>
 
               {/* Stats */}
               <div className="reveal reveal-delay-1 grid grid-cols-2 md:grid-cols-4 gap-6 mb-10 pb-10"
                 style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                {STATS.map((s) => (
+{([{num:c.stat1num,label:c.stat1label},{num:c.stat2num,label:c.stat2label},{num:c.stat3num,label:c.stat3label},{num:c.stat4num,label:c.stat4label}]).map((s) => (
                   <div key={s.label}>
                     <p className="font-light mb-1"
                       style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.8rem, 3vw, 2.6rem)", color: "var(--accent)", lineHeight: 1 }}>
@@ -139,7 +158,7 @@ export default function AboutPage() {
                   Notable shoots
                 </p>
                 <div className="space-y-4">
-                  {NOTABLE.map((n, i) => (
+                  {([{artist:c.notable1artist,venue:c.notable1venue},{artist:c.notable2artist,venue:c.notable2venue}]).map((n, i) => (
                     <div key={i} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
                       <span className="font-light shrink-0"
                         style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.4rem, 2.5vw, 2rem)", color: "var(--fg)" }}>
@@ -162,7 +181,7 @@ export default function AboutPage() {
                   Gear
                 </p>
                 <div className="space-y-2">
-                  {GEAR.map((g, i) => (
+                  {([{kind:c.gear1kind,item:c.gear1item},{kind:c.gear2kind,item:c.gear2item}]).map((g, i) => (
                     <div key={i} className="flex items-baseline gap-4">
                       <span className="text-[9px] tracking-[0.3em] uppercase shrink-0"
                         style={{ color: "#7a7a7a", fontFamily: "var(--font-body)", minWidth: "36px" }}>

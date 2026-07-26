@@ -95,10 +95,18 @@ export default function AdminPage() {
     } catch {}
   }, []);
 
+  const loadAboutContent = useCallback(async () => {
+    try {
+      const res = await fetch("/images/about-content.json?t=" + Date.now());
+      const data = await res.json();
+      setAboutContent(prev => ({ ...prev, ...data }));
+    } catch {}
+  }, []);
+
   useEffect(() => {
     const s = sessionStorage.getItem("cf_admin");
-    if (s === PASSWORD) { setAuthed(true); loadImages(); loadFocal(); }
-  }, [loadImages, loadFocal]);
+    if (s === PASSWORD) { setAuthed(true); loadImages(); loadFocal(); loadAboutContent(); }
+  }, [loadImages, loadFocal, loadAboutContent]);
 
   const login = () => {
     if (pw === PASSWORD) {

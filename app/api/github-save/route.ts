@@ -78,6 +78,16 @@ export async function POST(request: NextRequest) {
     const { type } = body;
 
     // ── REORDER: saves to order.json only (never touched by build) ──
+    if (type === "about") {
+      const aboutContent = body.data;
+      await commitFile(
+        "public/images/about-content.json",
+        JSON.stringify(aboutContent, null, 2),
+        "update about page content via admin"
+      );
+      return Response.json({ success: true });
+    }
+
     if (type === "reorder") {
       const { category, data } = body;
       const raw = await getFileContent("public/images/order.json");
