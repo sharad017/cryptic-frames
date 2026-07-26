@@ -8,7 +8,7 @@ const PASSWORD = "Hamilton2005!@#";
 type ImageMap = Record<string, string[]>;
 type FocalPoint = { desktop: string; mobile: string };
 type FocalMap = Record<string, FocalPoint>;
-type AdminView = "reorder" | "focal";
+type AdminView = "reorder" | "focal" | "about";
 type SaveStatus = "idle" | "saving" | "success" | "error";
 
 // ── Masonry column distributor ──
@@ -32,7 +32,24 @@ export default function AdminPage() {
   const [focalSaving, setFocalSaving] = useState<Record<string, SaveStatus>>({});
   const [focalMode, setFocalMode] = useState<"desktop" | "mobile">("mobile");
   const [focalZoom, setFocalZoom] = useState<Record<string, number>>({});
-  const getZoom = (key: string, mode: "mobile" | "desktop") => focalZoom[`${key}__${mode}`] || 1;
+  const getZoom = (key: string, mode: "mobile" | "desktop") => focalZoom[\`\${key}__\${mode}\`] || 1;
+
+  // About content state
+  const [aboutContent, setAboutContent] = useState({
+    bio1: "Self-taught. Six genres. Drawn to moments that exist for a fraction of a second — whether that's a peacock mid-display or a guitarist lost in the set.",
+    bio2: "In college, I joined Confluenz — GGSIPU's student photography collective — and spent a year covering everything from intimate portrait sessions to high-energy concert pits. That year compressed what might have taken five.",
+    bio3: "Currently based in Delhi. Open to work across India and beyond.",
+    stat1num: "6", stat1label: "Genres",
+    stat2num: "2023", stat2label: "Since",
+    stat3num: "Delhi", stat3label: "Based in",
+    stat4num: "∞", stat4label: "Frames left",
+    notable1artist: "Silver Lining", notable1venue: "Piano Man Jazz Club, Gurgaon",
+    notable2artist: "Desmadre Orchestra", notable2venue: "Piano Man, Eldeco Centre, Malviya Nagar",
+    gear1kind: "Body", gear1item: "Sony A6600",
+    gear2kind: "Lens", gear2item: "Sony E PZ 18-105mm F4 G OSS",
+  });
+  const [aboutSaveStatus, setAboutSaveStatus] = useState<SaveStatus>("idle");
+  const [aboutSaveMsg, setAboutSaveMsg] = useState("");
   const setZoom = (key: string, mode: "mobile" | "desktop", val: number) =>
     setFocalZoom(prev => ({ ...prev, [`${key}__${mode}`]: val }));
 
@@ -228,6 +245,33 @@ export default function AdminPage() {
     return { bg: "var(--accent)", color: "#070707", border: "none" };
   };
 
+  // ── Save about content ──
+  const handleSaveAbout = async () => {
+    setAboutSaveStatus("saving");
+    setAboutSaveMsg("Saving about content...");
+    try {
+      const res = await fetch("/api/github-save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "about", data: aboutContent }),
+      });
+      const result = await res.json();
+      if (result.success) {
+        setAboutSaveStatus("success");
+        setAboutSaveMsg("✓ Saved — about page will update in ~60 seconds");
+        setTimeout(() => { setAboutSaveStatus("idle"); setAboutSaveMsg(""); }, 10000);
+      } else {
+        setAboutSaveStatus("error");
+        setAboutSaveMsg("Error: " + (result.error || "Unknown"));
+        setTimeout(() => { setAboutSaveStatus("idle"); setAboutSaveMsg(""); }, 6000);
+      }
+    } catch {
+      setAboutSaveStatus("error");
+      setAboutSaveMsg("Network error");
+      setTimeout(() => { setAboutSaveStatus("idle"); setAboutSaveMsg(""); }, 6000);
+    }
+  };
+
   // ── LOGIN ──
   if (!authed) return (
     <main className="bg-[#0a0a0a] text-[#ede8e0] min-h-screen flex items-center justify-center px-6">
@@ -264,14 +308,24 @@ export default function AdminPage() {
         </div>
         <div className="flex items-center gap-3 flex-wrap">
           <div className="flex rounded-full overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-            {(["reorder", "focal"] as AdminView[]).map(v => (
+            {(["reorder", "focal", "about"] as AdminView[]).map(v => (
               <button key={v} onClick={() => setView(v)}
                 className="px-4 py-2 text-[10px] tracking-widest uppercase transition-all duration-200"
                 style={{ background: view === v ? "var(--accent)" : "transparent", color: view === v ? "#070707" : "var(--muted)", fontFamily: "var(--font-body)" }}>
-                {v === "reorder" ? "Reorder" : "Focal Points"}
+                {v === "reorder" ? "Reorder" : v === "focal" ? "Focal Points" : "About Page"}
               </button>
             ))}
           </div>
+          {view === "about" && (
+            <button onClick={handleSaveAbout} disabled={aboutSaveStatus === "saving"}
+              className="px-5 py-2 text-[10px] tracking-widest uppercase rounded-full transition-all duration-200"
+              style={{ background: btnColor(aboutSaveStatus).bg, color: btnColor(aboutSaveStatus).color, border: btnColor(aboutSaveStatus).border, fontFamily: "var(--font-body)" }}>
+              {aboutSaveStatus === "idle" && "Save About Page"}
+              {aboutSaveStatus === "saving" && "Saving..."}
+              {aboutSaveStatus === "success" && "✓ Saved"}
+              {aboutSaveStatus === "error" && "✗ Failed"}
+            </button>
+          )}
           {view === "reorder" && (
             <button onClick={handleSaveOrder} disabled={saveStatus === "saving"}
               className="px-5 py-2 text-[10px] tracking-widest uppercase rounded-full transition-all duration-200"
@@ -325,14 +379,14 @@ export default function AdminPage() {
             {/* Swap mode toggle */}
             <button
               onClick={() => setSwapSrc(null)}
-              className="text-[9px] tracking-widest uppercase transition-colors"
+              className="text-[9px] tracking-widest uppercase transition-all duration-200"
               style={{
                 fontFamily: "var(--font-body)",
-                color: swapSrc !== null ? "var(--accent)" : "#3a3a3a",
-                padding: "4px 10px",
-                border: `1px solid ${swapSrc !== null ? "var(--accent)" : "rgba(255,255,255,0.06)"}`,
+                color: swapSrc !== null ? "#070707" : "var(--accent)",
+                padding: "5px 14px",
+                border: "1px solid var(--accent)",
                 borderRadius: "100px",
-                background: swapSrc !== null ? "rgba(184,150,106,0.1)" : "transparent",
+                background: swapSrc !== null ? "var(--accent)" : "rgba(184,150,106,0.08)",
               }}
             >
               {swapSrc !== null ? `Swap: select 2nd image` : "Click to swap mode"}
@@ -433,6 +487,99 @@ export default function AdminPage() {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── ABOUT EDITOR VIEW ── */}
+      {view === "about" && (
+        <div className="px-5 md:px-10 py-8 pb-20 max-w-3xl">
+          {aboutSaveMsg && (
+            <div className="mb-6 px-4 py-3 rounded-xl text-xs" style={{
+              background: aboutSaveStatus === "error" ? "rgba(239,68,68,0.08)" : "rgba(74,222,128,0.08)",
+              border: `1px solid ${aboutSaveStatus === "error" ? "rgba(239,68,68,0.2)" : "rgba(74,222,128,0.2)"}`,
+              color: aboutSaveStatus === "error" ? "#ef4444" : "#4ade80",
+              fontFamily: "var(--font-body)"
+            }}>{aboutSaveMsg}</div>
+          )}
+
+          {/* Bio */}
+          <div className="mb-10">
+            <p className="text-[10px] tracking-[0.4em] uppercase mb-5" style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>Bio Paragraphs</p>
+            <div className="space-y-4">
+              {(["bio1", "bio2", "bio3"] as const).map((key, i) => (
+                <div key={key}>
+                  <p className="text-[9px] tracking-widest uppercase mb-2" style={{ color: "#444", fontFamily: "var(--font-body)" }}>Paragraph {i + 1}</p>
+                  <textarea
+                    value={aboutContent[key]}
+                    onChange={e => setAboutContent(prev => ({ ...prev, [key]: e.target.value }))}
+                    rows={3}
+                    style={{
+                      width: "100%", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+                      color: "#ede8e0", borderRadius: "10px", padding: "12px 14px", fontSize: "0.85rem",
+                      fontFamily: "var(--font-body)", resize: "vertical", outline: "none", lineHeight: 1.7,
+                    }}
+                    onFocus={e => e.target.style.borderColor = "var(--accent)"}
+                    onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="mb-10">
+            <p className="text-[10px] tracking-[0.4em] uppercase mb-5" style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>Stats</p>
+            <div className="grid grid-cols-2 gap-4">
+              {([["stat1num","stat1label"],["stat2num","stat2label"],["stat3num","stat3label"],["stat4num","stat4label"]] as const).map(([numKey, labelKey], i) => (
+                <div key={i} className="flex gap-2">
+                  <input value={aboutContent[numKey]} onChange={e => setAboutContent(prev => ({ ...prev, [numKey]: e.target.value }))}
+                    placeholder="Value" style={{ width: "70px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--accent)", borderRadius: "8px", padding: "10px 12px", fontSize: "1rem", fontFamily: "var(--font-display)", outline: "none" }}
+                    onFocus={e => e.target.style.borderColor = "var(--accent)"} onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"} />
+                  <input value={aboutContent[labelKey]} onChange={e => setAboutContent(prev => ({ ...prev, [labelKey]: e.target.value }))}
+                    placeholder="Label" style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "#ede8e0", borderRadius: "8px", padding: "10px 12px", fontSize: "0.8rem", fontFamily: "var(--font-body)", outline: "none" }}
+                    onFocus={e => e.target.style.borderColor = "var(--accent)"} onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Notable shoots */}
+          <div className="mb-10">
+            <p className="text-[10px] tracking-[0.4em] uppercase mb-5" style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>Notable Shoots</p>
+            <div className="space-y-4">
+              {([["notable1artist","notable1venue"],["notable2artist","notable2venue"]] as const).map(([artistKey, venueKey], i) => (
+                <div key={i} className="flex gap-2">
+                  <input value={aboutContent[artistKey]} onChange={e => setAboutContent(prev => ({ ...prev, [artistKey]: e.target.value }))}
+                    placeholder="Artist / Event" style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "#ede8e0", borderRadius: "8px", padding: "10px 12px", fontSize: "0.85rem", fontFamily: "var(--font-display)", outline: "none" }}
+                    onFocus={e => e.target.style.borderColor = "var(--accent)"} onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"} />
+                  <input value={aboutContent[venueKey]} onChange={e => setAboutContent(prev => ({ ...prev, [venueKey]: e.target.value }))}
+                    placeholder="Venue, Location" style={{ flex: 1.5, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "#8a8a8a", borderRadius: "8px", padding: "10px 12px", fontSize: "0.8rem", fontFamily: "var(--font-body)", outline: "none" }}
+                    onFocus={e => e.target.style.borderColor = "var(--accent)"} onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Gear */}
+          <div className="mb-10">
+            <p className="text-[10px] tracking-[0.4em] uppercase mb-5" style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>Gear</p>
+            <div className="space-y-3">
+              {([["gear1kind","gear1item"],["gear2kind","gear2item"]] as const).map(([kindKey, itemKey], i) => (
+                <div key={i} className="flex gap-2">
+                  <input value={aboutContent[kindKey]} onChange={e => setAboutContent(prev => ({ ...prev, [kindKey]: e.target.value }))}
+                    placeholder="Body / Lens" style={{ width: "80px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "#5a5a5a", borderRadius: "8px", padding: "10px 12px", fontSize: "0.75rem", fontFamily: "var(--font-body)", outline: "none" }}
+                    onFocus={e => e.target.style.borderColor = "var(--accent)"} onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"} />
+                  <input value={aboutContent[itemKey]} onChange={e => setAboutContent(prev => ({ ...prev, [itemKey]: e.target.value }))}
+                    placeholder="Gear item name" style={{ flex: 1, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "#c8c0b4", borderRadius: "8px", padding: "10px 12px", fontSize: "0.85rem", fontFamily: "var(--font-body)", outline: "none" }}
+                    onFocus={e => e.target.style.borderColor = "var(--accent)"} onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <p className="text-[10px]" style={{ color: "#2a2a2a", fontFamily: "var(--font-body)" }}>
+            Note: Save commits changes to GitHub. The about page will update automatically within ~60 seconds.
+          </p>
         </div>
       )}
 

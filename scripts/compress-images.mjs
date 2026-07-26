@@ -5,8 +5,9 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const imagesDir = path.join(__dirname, "../public/images");
 const CATEGORIES = ["featured", "concert", "wildlife", "travel", "event", "portrait", "street", "product", "about"];
-const MAX_WIDTH = 2500;
-const QUALITY = 85;
+const MAX_WIDTH = 2800;   // slightly wider for large monitors
+const QUALITY = 93;       // high quality — portfolio grade
+const SKIP_MB = 0.8;      // only skip truly tiny files under 800KB
 
 let sharp;
 try {
@@ -28,22 +29,19 @@ for (const cat of CATEGORIES) {
   console.log(`\n📁 ${cat} (${files.length} images)`);
 
   for (const file of files) {
-    // Use Buffer to read file — avoids all path/special character issues on Windows
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
     const sizeMB = (stat.size / 1024 / 1024).toFixed(1);
     total++;
 
-    if (stat.size < 1.5 * 1024 * 1024) {
+    if (stat.size < SKIP_MB * 1024 * 1024) {
       console.log(`  ✓ ${file} (${sizeMB}MB) — already small, skipped`);
       skipped++;
       continue;
     }
 
     try {
-      // Read into buffer first — bypasses Windows path issues with special chars
       const inputBuffer = fs.readFileSync(filePath);
-
       const img = sharp(inputBuffer);
       const meta = await img.metadata();
       const needsResize = (meta.width || 0) > MAX_WIDTH;
@@ -56,18 +54,15 @@ for (const cat of CATEGORIES) {
 
       const newSizeMB = (outBuffer.length / 1024 / 1024).toFixed(1);
 
-      // Always save as .jpg, clean up special chars in filename
       const cleanName = file
-        .replace(/\s*\(\d+\)\s*/g, "")   // remove (1), (2) etc
-        .replace(/\s+/g, "_")             // spaces to underscores
-        .replace(/[^a-zA-Z0-9._-]/g, "") // remove other special chars
+        .replace(/\s*\(\d+\)\s*/g, "")
+        .replace(/\s+/g, "_")
+        .replace(/[^a-zA-Z0-9._-]/g, "")
         .replace(/\.(jpg|jpeg|png|webp)$/i, ".jpg");
 
       const outPath = path.join(dir, cleanName);
-
       fs.writeFileSync(outPath, outBuffer);
 
-      // Remove original if filename changed
       if (cleanName !== file && fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
       }
