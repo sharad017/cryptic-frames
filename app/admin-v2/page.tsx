@@ -44,6 +44,9 @@ export default function AdminPage() {
   // Column count toggle — 2 / 3 / 4
   const [cols, setCols] = useState(3);
 
+  // Swap mode — click first image, click second to swap
+  const [swapSrc, setSwapSrc] = useState<number | null>(null);
+
   const loadImages = useCallback(async () => {
     setLoading(true);
     try {
@@ -120,6 +123,23 @@ export default function AdminPage() {
   const onDragEnd = () => {
     dragSrc.current = null; dragOver.current = null;
     setDragState({ src: null, over: null });
+  };
+
+  // ── Swap handler ──
+  const handleSwapClick = (flatIdx: number) => {
+    if (swapSrc === null) {
+      // First click — select source
+      setSwapSrc(flatIdx);
+    } else if (swapSrc === flatIdx) {
+      // Clicked same image — deselect
+      setSwapSrc(null);
+    } else {
+      // Second click — do the swap
+      const list = [...(images[activeTab] || [])];
+      [list[swapSrc], list[flatIdx]] = [list[flatIdx], list[swapSrc]];
+      setImages(prev => ({ ...prev, [activeTab]: list }));
+      setSwapSrc(null);
+    }
   };
 
   // ── Save order ──
@@ -302,6 +322,22 @@ export default function AdminPage() {
             <p className="text-[10px] text-neutral-600 tracking-widest uppercase" style={{ fontFamily: "var(--font-body)" }}>
               Drag to reorder · First image = cover · Save to update live site
             </p>
+            {/* Swap mode toggle */}
+            <button
+              onClick={() => setSwapSrc(null)}
+              className="text-[9px] tracking-widest uppercase transition-colors"
+              style={{
+                fontFamily: "var(--font-body)",
+                color: swapSrc !== null ? "var(--accent)" : "#3a3a3a",
+                padding: "4px 10px",
+                border: `1px solid ${swapSrc !== null ? "var(--accent)" : "rgba(255,255,255,0.06)"}`,
+                borderRadius: "100px",
+                background: swapSrc !== null ? "rgba(184,150,106,0.1)" : "transparent",
+              }}
+            >
+              {swapSrc !== null ? `Swap: select 2nd image` : "Click to swap mode"}
+            </button>
+
             {/* Column density toggle */}
             <div className="flex items-center gap-2">
               <p className="text-[9px] tracking-widest uppercase" style={{ color: "#4a4a4a", fontFamily: "var(--font-body)" }}>Columns</p>
@@ -347,12 +383,18 @@ export default function AdminPage() {
                         onDrop={e => onDrop(e, flatIdx)}
                         onDragEnd={onDragEnd}
                         className="relative group overflow-hidden rounded-lg"
+                        onClick={() => handleSwapClick(flatIdx)}
                         style={{
-                          cursor: "grab",
+                          cursor: swapSrc !== null ? "pointer" : "grab",
                           opacity: isSrc ? 0.25 : 1,
-                          outline: isOver ? "2px solid var(--accent)" : "2px solid transparent",
+                          outline: swapSrc === flatIdx
+                            ? "2px solid var(--accent)"
+                            : isOver
+                            ? "2px solid rgba(184,150,106,0.5)"
+                            : "2px solid transparent",
                           outlineOffset: "2px",
                           transition: "opacity 0.15s, outline 0.1s",
+                          boxShadow: swapSrc === flatIdx ? "0 0 0 4px rgba(184,150,106,0.15)" : "none",
                         }}
                       >
                         {/* Cover badge */}
@@ -380,7 +422,9 @@ export default function AdminPage() {
                         {/* Hover overlay */}
                         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
                           style={{ background: "rgba(10,10,10,0.45)" }}>
-                          <p className="text-[10px] tracking-widest" style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>⠿ drag</p>
+                          <p className="text-[10px] tracking-widest" style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
+                            {swapSrc !== null ? (swapSrc === flatIdx ? "✕ deselect" : "⇄ swap here") : "⠿ drag"}
+                          </p>
                         </div>
                       </div>
                     );
