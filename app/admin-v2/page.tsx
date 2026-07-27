@@ -171,28 +171,29 @@ export default function AdminPage() {
   };
 
   // ── Move to column ──
+  // Strategy: swap the selected image with the image currently occupying
+  // the nearest slot in the target column. This keeps the total count
+  // the same and doesn't shift anything else.
   const moveToColumn = (fromIdx: number, targetCol: number) => {
     const list = [...(images[activeTab] || [])];
-    const [item] = list.splice(fromIdx, 1);
+    const currentCol = fromIdx % cols;
+    if (currentCol === targetCol) { setColMenu(null); return; }
 
-    // Find the best insertion point so item lands in targetCol
-    // item at position i goes to column i % cols
-    // We want to find i such that i % cols === targetCol
-    // and i is close to fromIdx to minimize disruption
+    // Find all indices in the target column
+    const targetIndices = list
+      .map((_, i) => i)
+      .filter(i => i % cols === targetCol);
 
-    let bestIdx = 0;
-    let bestDist = Infinity;
-    for (let i = 0; i <= list.length; i++) {
-      if (i % cols === targetCol) {
-        const dist = Math.abs(i - fromIdx);
-        if (dist < bestDist) {
-          bestDist = dist;
-          bestIdx = i;
-        }
-      }
-    }
+    if (targetIndices.length === 0) { setColMenu(null); return; }
 
-    list.splice(bestIdx, 0, item);
+    // Find the closest index in the target column to fromIdx
+    const closestTargetIdx = targetIndices.reduce((best, idx) =>
+      Math.abs(idx - fromIdx) < Math.abs(best - fromIdx) ? idx : best
+    , targetIndices[0]);
+
+    // Simple swap — no shifting, no index math side effects
+    [list[fromIdx], list[closestTargetIdx]] = [list[closestTargetIdx], list[fromIdx]];
+
     setImages(prev => ({ ...prev, [activeTab]: list }));
     setColMenu(null);
     setSwapSrc(null);
@@ -758,8 +759,8 @@ export default function AdminPage() {
           <div
             className="fixed z-50 rounded-xl overflow-hidden"
             style={{
-              left: Math.min(colMenu.x, window.innerWidth - 180),
-              top: Math.min(colMenu.y, window.innerHeight - 160),
+              left: Math.min(colMenu.x, (typeof window !== "undefined" ? window.innerWidth : 1200) - 180),
+              top: Math.min(colMenu.y, (typeof window !== "undefined" ? window.innerHeight : 800) - 160),
               background: "rgba(18,18,18,0.98)",
               border: "1px solid rgba(255,255,255,0.1)",
               backdropFilter: "blur(20px)",
