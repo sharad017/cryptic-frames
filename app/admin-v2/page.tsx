@@ -53,9 +53,10 @@ export default function AdminPage() {
   const setZoom = (key: string, mode: "mobile" | "desktop", val: number) =>
     setFocalZoom(prev => ({ ...prev, [`${key}__${mode}`]: val }));
 
-  // Drag state — track by flat index
+  // Drag state
   const dragSrc = useRef<number | null>(null);
-  const dragOver = useRef<number | null>(null);
+  const dragOverItem = useRef<number | null>(null);
+  const dragOverCol = useRef<number | null>(null);
   const [dragState, setDragState] = useState<{ src: number | null; over: number | null }>({ src: null, over: null });
 
   // Column count toggle — 2 / 3 / 4
@@ -118,75 +119,89 @@ export default function AdminPage() {
     } else { setPwError(true); setTimeout(() => setPwError(false), 2000); }
   };
 
-  // ── Drag reorder — works on flat list ──
+  // ── Drag handlers ──
   const onDragStart = (flatIdx: number) => {
     dragSrc.current = flatIdx;
-    setDragState({ src: flatIdx, over: dragOver.current });
+    dragOverItem.current = null;
+    dragOverCol.current = null;
+    setDragState({ src: flatIdx, over: null });
   };
 
-  const onDragOver = (e: React.DragEvent, flatIdx: number) => {
+  const onDragOverItem = (e: React.DragEvent, flatIdx: number) => {
     e.preventDefault();
-    if (dragOver.current !== flatIdx) {
-      dragOver.current = flatIdx;
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = "move";
+    if (dragOverItem.current !== flatIdx) {
+      dragOverItem.current = flatIdx;
+      dragOverCol.current = null;
       setDragState({ src: dragSrc.current, over: flatIdx });
     }
   };
 
-  const onDrop = (e: React.DragEvent, toIdx: number) => {
+  const onDropItem = (e: React.DragEvent, toIdx: number) => {
     e.preventDefault();
+    e.stopPropagation();
     const fromIdx = dragSrc.current;
     if (fromIdx === null || fromIdx === toIdx) {
-      dragSrc.current = null; dragOver.current = null;
+      dragSrc.current = null; dragOverItem.current = null; dragOverCol.current = null;
       setDragState({ src: null, over: null });
       return;
     }
     const list = [...(images[activeTab] || [])];
     const [item] = list.splice(fromIdx, 1);
-    list.splice(toIdx, 0, item);
+    // Adjust toIdx after splice
+    const adjustedTo = fromIdx < toIdx ? toIdx - 1 : toIdx;
+    list.splice(adjustedTo, 0, item);
     setImages(prev => ({ ...prev, [activeTab]: list }));
-    dragSrc.current = null; dragOver.current = null;
+    dragSrc.current = null; dragOverItem.current = null; dragOverCol.current = null;
     setDragState({ src: null, over: null });
   };
 
-  const onDragEnd = () => {
-    dragSrc.current = null; dragOver.current = null;
-    setDragState({ src: null, over: null });
+  // Drop on column empty space — insert at the position that puts image in that column
+  const onDragOverColumn = (e: React.DragEvent, colIdx: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (dragOverCol.current !== colIdx) {
+      dragOverCol.current = colIdx;
+      dragOverItem.current = null;
+      setDragState(prev => ({ ...prev, over: null }));
+    }
   };
 
-  // Drop on empty column space — move dragged image to end of that column
   const onDropColumn = (e: React.DragEvent, targetColIdx: number) => {
     e.preventDefault();
-    e.stopPropagation();
     const fromIdx = dragSrc.current;
     if (fromIdx === null) return;
 
     const list = [...(images[activeTab] || [])];
     const [item] = list.splice(fromIdx, 1);
 
-    // Find the last image currently in targetColIdx after removal
-    // and insert after it. If column is empty, find any slot in that column.
-    let insertAt = list.length; // default: append at end
-    for (let i = list.length - 1; i >= 0; i--) {
+    // After removing item, find the best insert position:
+    // We want the image to appear in targetColIdx.
+    // In a cols-column grid, position i goes to column i % cols.
+    // Find the insert position closest to fromIdx that maps to targetColIdx.
+    let bestIdx = -1;
+    let bestDist = Infinity;
+    for (let i = 0; i <= list.length; i++) {
       if (i % cols === targetColIdx) {
-        insertAt = i + 1;
-        break;
+        const dist = Math.abs(i - fromIdx);
+        if (dist < bestDist) {
+          bestDist = dist;
+          bestIdx = i;
+        }
       }
     }
-    // Make sure insertAt lands in the right column
-    // If inserting at insertAt puts us in wrong column, try insertAt+1 or insertAt-1
-    while (insertAt % cols !== targetColIdx && insertAt <= list.length) {
-      insertAt++;
-    }
+    if (bestIdx === -1) bestIdx = list.length;
 
-    list.splice(insertAt, 0, item);
+    list.splice(bestIdx, 0, item);
     setImages(prev => ({ ...prev, [activeTab]: list }));
-    dragSrc.current = null; dragOver.current = null;
+    dragSrc.current = null; dragOverItem.current = null; dragOverCol.current = null;
     setDragState({ src: null, over: null });
   };
 
-  const onDragOverColumn = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
+  const onDragEnd = () => {
+    dragSrc.current = null; dragOverItem.current = null; dragOverCol.current = null;
+    setDragState({ src: null, over: null });
   };
 
   // ── Swap handler ──
@@ -500,7 +515,7 @@ export default function AdminPage() {
               {columns.map((col, colIdx) => (
                 <div
                   key={colIdx}
-                  onDragOver={onDragOverColumn}
+                  onDragOver={e => onDragOverColumn(e, colIdx)}
                   onDrop={e => onDropColumn(e, colIdx)}
                   style={{
                     display: "flex",
@@ -519,8 +534,8 @@ export default function AdminPage() {
                         key={img}
                         draggable
                         onDragStart={() => onDragStart(flatIdx)}
-                        onDragOver={e => onDragOver(e, flatIdx)}
-                        onDrop={e => onDrop(e, flatIdx)}
+                        onDragOver={e => onDragOverItem(e, flatIdx)}
+                        onDrop={e => onDropItem(e, flatIdx)}
                         onDragEnd={onDragEnd}
                         className="relative group overflow-hidden rounded-lg"
                         onClick={() => handleSwapClick(flatIdx)}
