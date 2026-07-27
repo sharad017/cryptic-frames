@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAltText, getAlt } from "@/app/hooks/useAltText";
 import { useIsMobile } from "@/app/hooks/useIsMobile";
 
@@ -8,50 +8,13 @@ const GAP = 6;
 const MOBILE_COLS: Record<number, number> = { [-1]: 1, 0: 1, 1: 2 };
 const DESKTOP_COLS: Record<number, number> = { [-1]: 2, 0: 3, 1: 4 };
 
-// Default aspect ratio if image not in dimensions.json
-const DEFAULT_RATIO = 1.5;
-
-type DimMap = Record<string, number>; // key → width/height ratio
-
-let dimCache: DimMap | null = null;
-
-function useDimensions(): DimMap {
-  const [dims, setDims] = useState<DimMap>(dimCache || {});
-  useEffect(() => {
-    if (dimCache) return;
-    fetch("/images/dimensions.json")
-      .then(r => r.json())
-      .then((d: DimMap) => { dimCache = d; setDims(d); })
-      .catch(() => {});
-  }, []);
-  return dims;
-}
-
-/**
- * Distribute images into columns by shortest column first.
- * Each column tracks its cumulative height (sum of 1/aspectRatio = relative height).
- * This prevents consecutive tall images ending up in the same column.
- */
-function balancedColumns(
+// Simple sequential distribution — preserves your arranged order exactly
+function sequentialColumns(
   images: { src: string; index: number; filename: string }[],
-  cols: number,
-  dims: DimMap,
-  category: string
+  cols: number
 ): { src: string; index: number; filename: string }[][] {
   const columns: { src: string; index: number; filename: string }[][] = Array.from({ length: cols }, () => []);
-  const heights = new Array(cols).fill(0);
-
-  for (const item of images) {
-    const key = `${category}/${item.filename}`;
-    const ratio = dims[key] || DEFAULT_RATIO;
-    const relHeight = 1 / ratio; // taller image = larger value
-
-    // Find shortest column
-    const shortest = heights.indexOf(Math.min(...heights));
-    columns[shortest].push(item);
-    heights[shortest] += relHeight + (GAP / 300); // account for gap
-  }
-
+  images.forEach((item, i) => columns[i % cols].push(item));
   return columns;
 }
 
@@ -67,7 +30,6 @@ export default function MasonryGrid({
   sizeAdjust?: number;
 }) {
   const altMap = useAltText();
-  const dims = useDimensions();
   const isMobile = useIsMobile();
 
   const columns = (isMobile ? MOBILE_COLS : DESKTOP_COLS)[sizeAdjust] ?? (isMobile ? 1 : 3);
@@ -78,7 +40,7 @@ export default function MasonryGrid({
     filename: img,
   }));
 
-  const cols = balancedColumns(items, columns, dims, category);
+  const cols = sequentialColumns(items, columns);
 
   return (
     <div className="w-full" style={{ padding: "0 24px 96px" }}>

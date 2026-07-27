@@ -64,6 +64,9 @@ export default function AdminPage() {
   // Swap mode — click first image, click second to swap
   const [swapSrc, setSwapSrc] = useState<number | null>(null);
 
+  // Column move menu — right-click an image to move it to a specific column
+  const [colMenu, setColMenu] = useState<{ flatIdx: number; x: number; y: number } | null>(null);
+
   const loadImages = useCallback(async () => {
     setLoading(true);
     try {
@@ -165,6 +168,34 @@ export default function AdminPage() {
       setImages(prev => ({ ...prev, [activeTab]: list }));
       setSwapSrc(null);
     }
+  };
+
+  // ── Move to column ──
+  const moveToColumn = (fromIdx: number, targetCol: number) => {
+    const list = [...(images[activeTab] || [])];
+    const [item] = list.splice(fromIdx, 1);
+
+    // Find the best insertion point so item lands in targetCol
+    // item at position i goes to column i % cols
+    // We want to find i such that i % cols === targetCol
+    // and i is close to fromIdx to minimize disruption
+
+    let bestIdx = 0;
+    let bestDist = Infinity;
+    for (let i = 0; i <= list.length; i++) {
+      if (i % cols === targetCol) {
+        const dist = Math.abs(i - fromIdx);
+        if (dist < bestDist) {
+          bestDist = dist;
+          bestIdx = i;
+        }
+      }
+    }
+
+    list.splice(bestIdx, 0, item);
+    setImages(prev => ({ ...prev, [activeTab]: list }));
+    setColMenu(null);
+    setSwapSrc(null);
   };
 
   // ── Save order ──
@@ -446,6 +477,10 @@ export default function AdminPage() {
                         onDragEnd={onDragEnd}
                         className="relative group overflow-hidden rounded-lg"
                         onClick={() => handleSwapClick(flatIdx)}
+                        onContextMenu={(e) => {
+                          e.preventDefault();
+                          setColMenu({ flatIdx, x: e.clientX, y: e.clientY });
+                        }}
                         style={{
                           cursor: swapSrc !== null ? "pointer" : "grab",
                           opacity: isSrc ? 0.25 : 1,
@@ -711,6 +746,61 @@ export default function AdminPage() {
           )}
         </div>
       )}
+      {/* Column move context menu */}
+      {colMenu !== null && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-50"
+            onClick={() => setColMenu(null)}
+          />
+          {/* Menu */}
+          <div
+            className="fixed z-50 rounded-xl overflow-hidden"
+            style={{
+              left: Math.min(colMenu.x, window.innerWidth - 180),
+              top: Math.min(colMenu.y, window.innerHeight - 160),
+              background: "rgba(18,18,18,0.98)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              backdropFilter: "blur(20px)",
+              minWidth: "160px",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+            }}
+          >
+            <p
+              className="px-4 py-2 text-[9px] tracking-widest uppercase"
+              style={{ color: "#444", fontFamily: "var(--font-body)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+            >
+              Move to column
+            </p>
+            {Array.from({ length: cols }, (_, i) => {
+              const currentCol = colMenu.flatIdx % cols;
+              const isCurrentCol = currentCol === i;
+              return (
+                <button
+                  key={i}
+                  onClick={() => moveToColumn(colMenu.flatIdx, i)}
+                  disabled={isCurrentCol}
+                  className="w-full px-4 py-3 text-left text-[11px] transition-colors duration-150"
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    color: isCurrentCol ? "#333" : "#c8c0b4",
+                    background: "transparent",
+                    cursor: isCurrentCol ? "default" : "pointer",
+                    display: "block",
+                    borderBottom: i < cols - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
+                  }}
+                  onMouseEnter={e => { if (!isCurrentCol) (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+                >
+                  {isCurrentCol ? `✓ Column ${i + 1} (current)` : `Column ${i + 1}`}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+
     </main>
   );
 }
