@@ -153,6 +153,42 @@ export default function AdminPage() {
     setDragState({ src: null, over: null });
   };
 
+  // Drop on empty column space — move dragged image to end of that column
+  const onDropColumn = (e: React.DragEvent, targetColIdx: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const fromIdx = dragSrc.current;
+    if (fromIdx === null) return;
+
+    const list = [...(images[activeTab] || [])];
+    const [item] = list.splice(fromIdx, 1);
+
+    // Find the last image currently in targetColIdx after removal
+    // and insert after it. If column is empty, find any slot in that column.
+    let insertAt = list.length; // default: append at end
+    for (let i = list.length - 1; i >= 0; i--) {
+      if (i % cols === targetColIdx) {
+        insertAt = i + 1;
+        break;
+      }
+    }
+    // Make sure insertAt lands in the right column
+    // If inserting at insertAt puts us in wrong column, try insertAt+1 or insertAt-1
+    while (insertAt % cols !== targetColIdx && insertAt <= list.length) {
+      insertAt++;
+    }
+
+    list.splice(insertAt, 0, item);
+    setImages(prev => ({ ...prev, [activeTab]: list }));
+    dragSrc.current = null; dragOver.current = null;
+    setDragState({ src: null, over: null });
+  };
+
+  const onDragOverColumn = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
   // ── Swap handler ──
   const handleSwapClick = (flatIdx: number) => {
     if (swapSrc === null) {
@@ -462,7 +498,17 @@ export default function AdminPage() {
             /* ── Masonry grid — actual aspect ratios ── */
             <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: "6px", alignItems: "start" }}>
               {columns.map((col, colIdx) => (
-                <div key={colIdx} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <div
+                  key={colIdx}
+                  onDragOver={onDragOverColumn}
+                  onDrop={e => onDropColumn(e, colIdx)}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "6px",
+                    minHeight: "200px", // ensures empty columns are droppable
+                  }}
+                >
                   {col.map((img) => {
                     const flatIdx = current.indexOf(img);
                     const isSrc = dragState.src === flatIdx;
@@ -527,6 +573,25 @@ export default function AdminPage() {
                       </div>
                     );
                   })}
+                  {/* Drop zone indicator at bottom of column */}
+                  {dragState.src !== null && (
+                    <div
+                      style={{
+                        height: "60px",
+                        borderRadius: "8px",
+                        border: "1px dashed rgba(184,150,106,0.3)",
+                        background: "rgba(184,150,106,0.04)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <p style={{ color: "rgba(184,150,106,0.4)", fontSize: "9px", letterSpacing: "0.3em", fontFamily: "var(--font-body)", textTransform: "uppercase" }}>
+                        drop here
+                      </p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
