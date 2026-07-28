@@ -46,11 +46,19 @@ export default function AdminPage() {
   const setZoom = (key: string, mode: "mobile" | "desktop", val: number) =>
     setFocalZoom(prev => ({ ...prev, [`${key}__${mode}`]: val }));
 
-  // Drag state
-  const dragSrc = useRef<number | null>(null);
-  const dragOverItem = useRef<number | null>(null);
-  const dragOverCol = useRef<number | null>(null);
-  const [dragState, setDragState] = useState<{ src: number | null; over: number | null }>({ src: null, over: null });
+  // Per-column drag state
+  // Each column is independent — dragging in col1 never affects col2 or col3
+  const [colLists, setColLists] = useState<string[][]>([[], [], []]);
+  const dragInfo = useRef<{ fromCol: number; fromIdx: number } | null>(null);
+  const [dragOver, setDragOver] = useState<{ col: number; idx: number } | null>(null);
+
+  // Sync colLists when images/cols change
+  // Split flat list into columns in Z-order: img0→col0, img1→col1, img2→col2, img3→col0...
+  const syncColLists = (flatList: string[], numCols: number) => {
+    const columns: string[][] = Array.from({ length: numCols }, () => []);
+    flatList.forEach((img, i) => columns[i % numCols].push(img));
+    setColLists(columns);
+  };
 
   // Column count toggle — 2 / 3 / 4
   const [cols, setCols] = useState(3);
@@ -105,6 +113,12 @@ export default function AdminPage() {
     if (s === PASSWORD) { setAuthed(true); loadImages(); loadFocal(); loadAboutContent(); }
   }, [loadImages, loadFocal, loadAboutContent]);
 
+  // Sync columns whenever active category images or col count changes
+  useEffect(() => {
+    const flat = images[activeTab] || [];
+    syncColLists(flat, cols);
+  }, [images, activeTab, cols]); // eslint-disable-line
+
   const login = () => {
     if (pw === PASSWORD) {
       sessionStorage.setItem("cf_admin", pw);
@@ -112,92 +126,69 @@ export default function AdminPage() {
     } else { setPwError(true); setTimeout(() => setPwError(false), 2000); }
   };
 
-  // ── Drag handlers ──
-  const onDragStart = (flatIdx: number) => {
-    dragSrc.current = flatIdx;
-    dragOverItem.current = null;
-    dragOverCol.current = null;
-    setDragState({ src: flatIdx, over: null });
+  // ── Per-column drag handlers ──
+
+  const onItemDragStart = (colIdx: number, itemIdx: number) => {
+    dragInfo.current = { fromCol: colIdx, fromIdx: itemIdx };
+    setDragOver(null);
   };
 
-  const onDragOverItem = (e: React.DragEvent, flatIdx: number) => {
-    e.preventDefault();
-    e.stopPropagation();
-    e.dataTransfer.dropEffect = "move";
-    if (dragOverItem.current !== flatIdx) {
-      dragOverItem.current = flatIdx;
-      dragOverCol.current = null;
-      setDragState({ src: dragSrc.current, over: flatIdx });
-    }
-  };
-
-  const onDropItem = (e: React.DragEvent, toIdx: number) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const fromIdx = dragSrc.current;
-    if (fromIdx === null || fromIdx === toIdx) {
-      dragSrc.current = null; dragOverItem.current = null; dragOverCol.current = null;
-      setDragState({ src: null, over: null });
-      return;
-    }
-    const list = [...(images[activeTab] || [])];
-    const [item] = list.splice(fromIdx, 1);
-    // Adjust toIdx after splice
-    const adjustedTo = fromIdx < toIdx ? toIdx - 1 : toIdx;
-    list.splice(adjustedTo, 0, item);
-    setImages(prev => ({ ...prev, [activeTab]: list }));
-    dragSrc.current = null; dragOverItem.current = null; dragOverCol.current = null;
-    setDragState({ src: null, over: null });
-  };
-
-  // Drop on column empty space — insert at the position that puts image in that column
-  const onDragOverColumn = (e: React.DragEvent, colIdx: number) => {
+  const onItemDragOver = (e: React.DragEvent, colIdx: number, itemIdx: number) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    if (dragOverCol.current !== colIdx) {
-      dragOverCol.current = colIdx;
-      dragOverItem.current = null;
-      setDragState(prev => ({ ...prev, over: null }));
-    }
+    setDragOver({ col: colIdx, idx: itemIdx });
   };
 
-  const onDropColumn = (e: React.DragEvent, targetColIdx: number) => {
+  const onColDragOver = (e: React.DragEvent, colIdx: number) => {
     e.preventDefault();
-    const fromIdx = dragSrc.current;
-    if (fromIdx === null) return;
+    e.dataTransfer.dropEffect = "move";
+    // Only update if not already over an item in this col
+    setDragOver(prev => prev?.col === colIdx ? prev : { col: colIdx, idx: -1 });
+  };
 
-    const list = [...(images[activeTab] || [])];
-    const [item] = list.splice(fromIdx, 1);
+  const onDrop = (e: React.DragEvent, toCol: number, toIdx: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const from = dragInfo.current;
+    if (!from) return;
 
-    // After removing item, find the best insert position:
-    // We want the image to appear in targetColIdx.
-    // In a cols-column grid, position i goes to column i % cols.
-    // Find the insert position closest to fromIdx that maps to targetColIdx.
-    let bestIdx = -1;
-    let bestDist = Infinity;
-    for (let i = 0; i <= list.length; i++) {
-      if (i % cols === targetColIdx) {
-        const dist = Math.abs(i - fromIdx);
-        if (dist < bestDist) {
-          bestDist = dist;
-          bestIdx = i;
-        }
+    const newCols = colLists.map(c => [...c]);
+    const [item] = newCols[from.fromCol].splice(from.fromIdx, 1);
+
+    if (toIdx === -1 || toIdx >= newCols[toCol].length) {
+      // Drop on column empty space — append to bottom of that column
+      newCols[toCol].push(item);
+    } else if (from.fromCol === toCol) {
+      // Reorder within same column
+      const adjustedIdx = from.fromIdx < toIdx ? toIdx - 1 : toIdx;
+      newCols[toCol].splice(adjustedIdx, 0, item);
+    } else {
+      // Move to different column at specific position
+      newCols[toCol].splice(toIdx, 0, item);
+    }
+
+    setColLists(newCols);
+
+    // Merge back to flat Z-order for saving
+    const maxLen = Math.max(...newCols.map(c => c.length));
+    const flat: string[] = [];
+    for (let row = 0; row < maxLen; row++) {
+      for (let col = 0; col < cols; col++) {
+        if (newCols[col][row]) flat.push(newCols[col][row]);
       }
     }
-    if (bestIdx === -1) bestIdx = list.length;
+    setImages(prev => ({ ...prev, [activeTab]: flat }));
 
-    list.splice(bestIdx, 0, item);
-    setImages(prev => ({ ...prev, [activeTab]: list }));
-    dragSrc.current = null; dragOverItem.current = null; dragOverCol.current = null;
-    setDragState({ src: null, over: null });
+    dragInfo.current = null;
+    setDragOver(null);
   };
 
   const onDragEnd = () => {
-    dragSrc.current = null; dragOverItem.current = null; dragOverCol.current = null;
-    setDragState({ src: null, over: null });
+    dragInfo.current = null;
+    setDragOver(null);
   };
 
-  // ── Swap handler ──
+  // ── Swap handler ──  // ── Swap handler ──
   const handleSwapClick = (flatIdx: number) => {
     if (swapSrc === null) {
       // First click — select source
@@ -502,54 +493,94 @@ export default function AdminPage() {
               <p className="text-[10px] tracking-widest uppercase" style={{ fontFamily: "var(--font-body)" }}>No images in this category</p>
             </div>
           ) : (
-            <div style={{ columns: cols, columnGap: "6px" }}>
-              {current.map((img, flatIdx) => {
-                const isSrc = dragState.src === flatIdx;
-                const isOver = dragState.over === flatIdx && dragState.src !== flatIdx;
-                return (
+            <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: "6px", alignItems: "start" }}>
+              {colLists.slice(0, cols).map((colImgs, colIdx) => (
+                <div
+                  key={colIdx}
+                  onDragOver={e => onColDragOver(e, colIdx)}
+                  onDrop={e => onDrop(e, colIdx, -1)}
+                  style={{ display: "flex", flexDirection: "column", gap: "6px", minHeight: "120px" }}
+                >
+                  {/* Column header */}
+                  <div style={{ padding: "4px 8px", textAlign: "center", borderRadius: "6px",
+                    background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                    <p style={{ fontSize: "9px", letterSpacing: "0.3em", color: "#444",
+                      textTransform: "uppercase", fontFamily: "var(--font-body)" }}>
+                      Column {colIdx + 1} · {colImgs.length} images
+                    </p>
+                  </div>
+
+                  {colImgs.map((img, itemIdx) => {
+                    const isDragging = dragInfo.current?.fromCol === colIdx && dragInfo.current?.fromIdx === itemIdx;
+                    const isOver = dragOver?.col === colIdx && dragOver?.idx === itemIdx;
+                    const isCover = colIdx === 0 && itemIdx === 0;
+
+                    return (
+                      <div
+                        key={img}
+                        draggable
+                        onDragStart={() => onItemDragStart(colIdx, itemIdx)}
+                        onDragOver={e => onItemDragOver(e, colIdx, itemIdx)}
+                        onDrop={e => onDrop(e, colIdx, itemIdx)}
+                        onDragEnd={onDragEnd}
+                                        className="relative group overflow-hidden rounded-lg"
+                        style={{
+                          cursor: "grab",
+                          opacity: isDragging ? 0.25 : 1,
+                          outline: isOver ? "2px solid var(--accent)" : "2px solid transparent",
+                          outlineOffset: "2px",
+                          transition: "opacity 0.15s, outline 0.1s",
+                        }}
+                      >
+                        {isCover && (
+                          <div className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full text-[8px] tracking-widest uppercase"
+                            style={{ background: "var(--accent)", color: "#070707", fontFamily: "var(--font-body)" }}>
+                            Cover
+                          </div>
+                        )}
+                        <div className="absolute top-2 right-2 z-10 w-5 h-5 rounded-full flex items-center justify-center text-[9px]"
+                          style={{ background: "rgba(10,10,10,0.85)", color: "#666", fontFamily: "var(--font-body)" }}>
+                          {itemIdx + 1}
+                        </div>
+                        <img src={`/images/${activeTab}/${img}`} alt="" draggable={false}
+                          className="w-full h-auto block pointer-events-none select-none" />
+                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
+                          style={{ background: "rgba(10,10,10,0.45)" }}>
+                          <p className="text-[10px] tracking-widest" style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
+                            ⠿ drag
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* Drop zone at bottom of column */}
                   <div
-                    key={img}
-                    draggable
-                    onDragStart={() => onDragStart(flatIdx)}
-                    onDragOver={e => onDragOverItem(e, flatIdx)}
-                    onDrop={e => onDropItem(e, flatIdx)}
-                    onDragEnd={onDragEnd}
-                    onClick={() => handleSwapClick(flatIdx)}
-                    onContextMenu={(e) => { e.preventDefault(); setColMenu({ flatIdx, x: e.clientX, y: e.clientY }); }}
-                    className="relative group overflow-hidden rounded-lg"
+                    onDragOver={e => onColDragOver(e, colIdx)}
+                    onDrop={e => onDrop(e, colIdx, -1)}
                     style={{
-                      breakInside: "avoid",
-                      marginBottom: "6px",
-                      display: "block",
-                      cursor: swapSrc !== null ? "pointer" : "grab",
-                      opacity: isSrc ? 0.25 : 1,
-                      outline: swapSrc === flatIdx ? "2px solid var(--accent)" : isOver ? "2px solid rgba(184,150,106,0.5)" : "2px solid transparent",
-                      outlineOffset: "2px",
-                      transition: "opacity 0.15s, outline 0.1s",
-                      boxShadow: swapSrc === flatIdx ? "0 0 0 4px rgba(184,150,106,0.15)" : "none",
+                      flex: 1,
+                      minHeight: "60px",
+                      borderRadius: "8px",
+                      border: dragOver?.col === colIdx && dragOver?.idx === -1
+                        ? "1px dashed var(--accent)"
+                        : "1px dashed rgba(255,255,255,0.06)",
+                      background: dragOver?.col === colIdx && dragOver?.idx === -1
+                        ? "rgba(184,150,106,0.06)"
+                        : "transparent",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transition: "border-color 0.15s, background 0.15s",
                     }}
                   >
-                    {flatIdx === 0 && (
-                      <div className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full text-[8px] tracking-widest uppercase"
-                        style={{ background: "var(--accent)", color: "#070707", fontFamily: "var(--font-body)" }}>
-                        Cover
-                      </div>
-                    )}
-                    <div className="absolute top-2 right-2 z-10 w-5 h-5 rounded-full flex items-center justify-center text-[9px]"
-                      style={{ background: "rgba(10,10,10,0.85)", color: isOver ? "var(--accent)" : "#666", fontFamily: "var(--font-body)" }}>
-                      {flatIdx + 1}
-                    </div>
-                    <img src={`/images/${activeTab}/${img}`} alt="" draggable={false}
-                      className="w-full h-auto block pointer-events-none select-none" />
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
-                      style={{ background: "rgba(10,10,10,0.45)" }}>
-                      <p className="text-[10px] tracking-widest" style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
-                        {swapSrc !== null ? (swapSrc === flatIdx ? "✕ deselect" : "⇄ swap here") : "⠿ drag"}
-                      </p>
-                    </div>
+                    <p style={{ fontSize: "9px", letterSpacing: "0.3em", color: "rgba(255,255,255,0.08)",
+                      textTransform: "uppercase", fontFamily: "var(--font-body)" }}>
+                      drop here
+                    </p>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           )}
         </div>
