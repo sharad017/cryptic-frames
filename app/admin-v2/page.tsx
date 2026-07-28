@@ -502,7 +502,6 @@ export default function AdminPage() {
               <p className="text-[10px] tracking-widest uppercase" style={{ fontFamily: "var(--font-body)" }}>No images in this category</p>
             </div>
           ) : (
-            {/* ── CSS columns — no gaps, matches live site exactly ── */}
             <div style={{ columns: cols, columnGap: "6px" }}>
               {current.map((img, flatIdx) => {
                 const isSrc = dragState.src === flatIdx;
