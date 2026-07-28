@@ -3,20 +3,8 @@ import { useState } from "react";
 import { useAltText, getAlt } from "@/app/hooks/useAltText";
 import { useIsMobile } from "@/app/hooks/useIsMobile";
 
-const GAP = 6;
-
 const MOBILE_COLS: Record<number, number> = { [-1]: 1, 0: 1, 1: 2 };
 const DESKTOP_COLS: Record<number, number> = { [-1]: 2, 0: 3, 1: 4 };
-
-// Simple sequential distribution — preserves your arranged order exactly
-function sequentialColumns(
-  images: { src: string; index: number; filename: string }[],
-  cols: number
-): { src: string; index: number; filename: string }[][] {
-  const columns: { src: string; index: number; filename: string }[][] = Array.from({ length: cols }, () => []);
-  images.forEach((item, i) => columns[i % cols].push(item));
-  return columns;
-}
 
 export default function MasonryGrid({
   images,
@@ -31,41 +19,26 @@ export default function MasonryGrid({
 }) {
   const altMap = useAltText();
   const isMobile = useIsMobile();
-
   const columns = (isMobile ? MOBILE_COLS : DESKTOP_COLS)[sizeAdjust] ?? (isMobile ? 1 : 3);
 
-  const items = images.map((img, i) => ({
-    src: `/images/${category}/${img}`,
-    index: i,
-    filename: img,
-  }));
-
-  const cols = sequentialColumns(items, columns);
-
   return (
-    <div className="w-full" style={{ padding: "0 24px 96px" }}>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${columns}, 1fr)`,
-          gap: `${GAP}px`,
-          alignItems: "start",
-        }}
-      >
-        {cols.map((col, colIdx) => (
-          <div key={colIdx} style={{ display: "flex", flexDirection: "column", gap: `${GAP}px` }}>
-            {col.map((item) => (
-              <MasonryItem
-                key={item.index}
-                src={item.src}
-                index={item.index}
-                alt={getAlt(altMap, category, item.filename)}
-                onClick={onImageClick}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
+    <div
+      className="w-full"
+      style={{
+        padding: "0 24px 96px",
+        columns: columns,
+        columnGap: "6px",
+      }}
+    >
+      {images.map((img, i) => (
+        <MasonryItem
+          key={img}
+          src={`/images/${category}/${img}`}
+          index={i}
+          alt={getAlt(altMap, category, img)}
+          onClick={onImageClick}
+        />
+      ))}
     </div>
   );
 }
@@ -88,7 +61,9 @@ function MasonryItem({
     <div
       className="relative overflow-hidden cursor-pointer"
       style={{
-        width: "100%",
+        breakInside: "avoid",
+        marginBottom: "6px",
+        display: "block",
         background: loaded ? "transparent" : "#1a1a1a",
         opacity: loaded ? 1 : 0.7,
         transition: "opacity 0.4s ease",

@@ -11,13 +11,6 @@ type FocalMap = Record<string, FocalPoint>;
 type AdminView = "reorder" | "focal" | "about";
 type SaveStatus = "idle" | "saving" | "success" | "error";
 
-// ── Masonry column distributor ──
-function buildColumns(items: string[], cols: number): string[][] {
-  const columns: string[][] = Array.from({ length: cols }, () => []);
-  items.forEach((item, i) => columns[i % cols].push(item));
-  return columns;
-}
-
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
   const [pw, setPw] = useState("");
@@ -385,7 +378,6 @@ export default function AdminPage() {
   );
 
   const current = images[activeTab] || [];
-  const columns = buildColumns(current, cols);
 
   return (
     <main className="bg-[#0a0a0a] text-[#ede8e0] min-h-screen">
@@ -510,105 +502,55 @@ export default function AdminPage() {
               <p className="text-[10px] tracking-widest uppercase" style={{ fontFamily: "var(--font-body)" }}>No images in this category</p>
             </div>
           ) : (
-            /* ── Masonry grid — actual aspect ratios ── */
-            <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: "6px", alignItems: "start" }}>
-              {columns.map((col, colIdx) => (
-                <div
-                  key={colIdx}
-                  onDragOver={e => onDragOverColumn(e, colIdx)}
-                  onDrop={e => onDropColumn(e, colIdx)}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "6px",
-                    minHeight: "200px", // ensures empty columns are droppable
-                  }}
-                >
-                  {col.map((img) => {
-                    const flatIdx = current.indexOf(img);
-                    const isSrc = dragState.src === flatIdx;
-                    const isOver = dragState.over === flatIdx && dragState.src !== flatIdx;
-
-                    return (
-                      <div
-                        key={img}
-                        draggable
-                        onDragStart={() => onDragStart(flatIdx)}
-                        onDragOver={e => onDragOverItem(e, flatIdx)}
-                        onDrop={e => onDropItem(e, flatIdx)}
-                        onDragEnd={onDragEnd}
-                        className="relative group overflow-hidden rounded-lg"
-                        onClick={() => handleSwapClick(flatIdx)}
-                        onContextMenu={(e) => {
-                          e.preventDefault();
-                          setColMenu({ flatIdx, x: e.clientX, y: e.clientY });
-                        }}
-                        style={{
-                          cursor: swapSrc !== null ? "pointer" : "grab",
-                          opacity: isSrc ? 0.25 : 1,
-                          outline: swapSrc === flatIdx
-                            ? "2px solid var(--accent)"
-                            : isOver
-                            ? "2px solid rgba(184,150,106,0.5)"
-                            : "2px solid transparent",
-                          outlineOffset: "2px",
-                          transition: "opacity 0.15s, outline 0.1s",
-                          boxShadow: swapSrc === flatIdx ? "0 0 0 4px rgba(184,150,106,0.15)" : "none",
-                        }}
-                      >
-                        {/* Cover badge */}
-                        {flatIdx === 0 && (
-                          <div className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full text-[8px] tracking-widest uppercase"
-                            style={{ background: "var(--accent)", color: "#070707", fontFamily: "var(--font-body)" }}>
-                            Cover
-                          </div>
-                        )}
-
-                        {/* Position number */}
-                        <div className="absolute top-2 right-2 z-10 w-5 h-5 rounded-full flex items-center justify-center text-[9px]"
-                          style={{ background: "rgba(10,10,10,0.85)", color: isOver ? "var(--accent)" : "#666", fontFamily: "var(--font-body)" }}>
-                          {flatIdx + 1}
-                        </div>
-
-                        {/* Image — natural aspect ratio */}
-                        <img
-                          src={`/images/${activeTab}/${img}`}
-                          alt=""
-                          draggable={false}
-                          className="w-full h-auto block pointer-events-none select-none"
-                        />
-
-                        {/* Hover overlay */}
-                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
-                          style={{ background: "rgba(10,10,10,0.45)" }}>
-                          <p className="text-[10px] tracking-widest" style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
-                            {swapSrc !== null ? (swapSrc === flatIdx ? "✕ deselect" : "⇄ swap here") : "⠿ drag"}
-                          </p>
-                        </div>
+            {/* ── CSS columns — no gaps, matches live site exactly ── */}
+            <div style={{ columns: cols, columnGap: "6px" }}>
+              {current.map((img, flatIdx) => {
+                const isSrc = dragState.src === flatIdx;
+                const isOver = dragState.over === flatIdx && dragState.src !== flatIdx;
+                return (
+                  <div
+                    key={img}
+                    draggable
+                    onDragStart={() => onDragStart(flatIdx)}
+                    onDragOver={e => onDragOverItem(e, flatIdx)}
+                    onDrop={e => onDropItem(e, flatIdx)}
+                    onDragEnd={onDragEnd}
+                    onClick={() => handleSwapClick(flatIdx)}
+                    onContextMenu={(e) => { e.preventDefault(); setColMenu({ flatIdx, x: e.clientX, y: e.clientY }); }}
+                    className="relative group overflow-hidden rounded-lg"
+                    style={{
+                      breakInside: "avoid",
+                      marginBottom: "6px",
+                      display: "block",
+                      cursor: swapSrc !== null ? "pointer" : "grab",
+                      opacity: isSrc ? 0.25 : 1,
+                      outline: swapSrc === flatIdx ? "2px solid var(--accent)" : isOver ? "2px solid rgba(184,150,106,0.5)" : "2px solid transparent",
+                      outlineOffset: "2px",
+                      transition: "opacity 0.15s, outline 0.1s",
+                      boxShadow: swapSrc === flatIdx ? "0 0 0 4px rgba(184,150,106,0.15)" : "none",
+                    }}
+                  >
+                    {flatIdx === 0 && (
+                      <div className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full text-[8px] tracking-widest uppercase"
+                        style={{ background: "var(--accent)", color: "#070707", fontFamily: "var(--font-body)" }}>
+                        Cover
                       </div>
-                    );
-                  })}
-                  {/* Drop zone indicator at bottom of column */}
-                  {dragState.src !== null && (
-                    <div
-                      style={{
-                        height: "60px",
-                        borderRadius: "8px",
-                        border: "1px dashed rgba(184,150,106,0.3)",
-                        background: "rgba(184,150,106,0.04)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <p style={{ color: "rgba(184,150,106,0.4)", fontSize: "9px", letterSpacing: "0.3em", fontFamily: "var(--font-body)", textTransform: "uppercase" }}>
-                        drop here
+                    )}
+                    <div className="absolute top-2 right-2 z-10 w-5 h-5 rounded-full flex items-center justify-center text-[9px]"
+                      style={{ background: "rgba(10,10,10,0.85)", color: isOver ? "var(--accent)" : "#666", fontFamily: "var(--font-body)" }}>
+                      {flatIdx + 1}
+                    </div>
+                    <img src={`/images/${activeTab}/${img}`} alt="" draggable={false}
+                      className="w-full h-auto block pointer-events-none select-none" />
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
+                      style={{ background: "rgba(10,10,10,0.45)" }}>
+                      <p className="text-[10px] tracking-widest" style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
+                        {swapSrc !== null ? (swapSrc === flatIdx ? "✕ deselect" : "⇄ swap here") : "⠿ drag"}
                       </p>
                     </div>
-                  )}
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
