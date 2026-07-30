@@ -46,19 +46,8 @@ export default function AdminPage() {
   const setZoom = (key: string, mode: "mobile" | "desktop", val: number) =>
     setFocalZoom(prev => ({ ...prev, [`${key}__${mode}`]: val }));
 
-  // Per-column drag state
-  // Each column is independent — dragging in col1 never affects col2 or col3
-  const [colLists, setColLists] = useState<string[][]>([[], [], []]);
-  const dragInfo = useRef<{ fromCol: number; fromIdx: number } | null>(null);
-  const [dragOver, setDragOver] = useState<{ col: number; idx: number } | null>(null);
+  // Drag state
 
-  // Sync colLists when images/cols change
-  // Split flat list into columns in Z-order: img0→col0, img1→col1, img2→col2, img3→col0...
-  const syncColLists = (flatList: string[], numCols: number) => {
-    const columns: string[][] = Array.from({ length: numCols }, () => []);
-    flatList.forEach((img, i) => columns[i % numCols].push(img));
-    setColLists(columns);
-  };
 
   // Column count toggle — 2 / 3 / 4
   const [cols, setCols] = useState(3);
@@ -68,6 +57,19 @@ export default function AdminPage() {
 
   // Column move menu — right-click an image to move it to a specific column
   const [colMenu, setColMenu] = useState<{ flatIdx: number; x: number; y: number } | null>(null);
+
+  // Independent column lists — each column is its own sequence
+  const [colLists, setColLists] = useState<string[][]>([[], [], []]);
+  const dragInfo = useRef<{ fromCol: number; fromIdx: number } | null>(null);
+  const [dragOver, setDragOver] = useState<{ col: number; idx: number } | null>(null);
+
+  // Split flat Z-order list into per-column lists
+  // flat[0]→col0, flat[1]→col1, flat[2]→col2, flat[3]→col0, flat[4]→col1...
+  const syncColLists = (flatList: string[], numCols: number) => {
+    const columns: string[][] = Array.from({ length: numCols }, () => []);
+    flatList.forEach((img, i) => columns[i % numCols].push(img));
+    setColLists(columns);
+  };
 
   const loadImages = useCallback(async () => {
     setLoading(true);
@@ -113,7 +115,7 @@ export default function AdminPage() {
     if (s === PASSWORD) { setAuthed(true); loadImages(); loadFocal(); loadAboutContent(); }
   }, [loadImages, loadFocal, loadAboutContent]);
 
-  // Sync columns whenever active category images or col count changes
+  // Sync colLists whenever active category, images, or col count changes
   useEffect(() => {
     const flat = images[activeTab] || [];
     syncColLists(flat, cols);
@@ -126,8 +128,9 @@ export default function AdminPage() {
     } else { setPwError(true); setTimeout(() => setPwError(false), 2000); }
   };
 
-  // ── Per-column drag handlers ──
 
+
+  // ── Per-column drag handlers ──
   const onItemDragStart = (colIdx: number, itemIdx: number) => {
     dragInfo.current = { fromCol: colIdx, fromIdx: itemIdx };
     setDragOver(null);
@@ -135,6 +138,7 @@ export default function AdminPage() {
 
   const onItemDragOver = (e: React.DragEvent, colIdx: number, itemIdx: number) => {
     e.preventDefault();
+    e.stopPropagation();
     e.dataTransfer.dropEffect = "move";
     setDragOver({ col: colIdx, idx: itemIdx });
   };
@@ -142,11 +146,10 @@ export default function AdminPage() {
   const onColDragOver = (e: React.DragEvent, colIdx: number) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    // Only update if not already over an item in this col
     setDragOver(prev => prev?.col === colIdx ? prev : { col: colIdx, idx: -1 });
   };
 
-  const onDrop = (e: React.DragEvent, toCol: number, toIdx: number) => {
+  const onColDrop = (e: React.DragEvent, toCol: number, toIdx: number) => {
     e.preventDefault();
     e.stopPropagation();
     const from = dragInfo.current;
@@ -156,20 +159,17 @@ export default function AdminPage() {
     const [item] = newCols[from.fromCol].splice(from.fromIdx, 1);
 
     if (toIdx === -1 || toIdx >= newCols[toCol].length) {
-      // Drop on column empty space — append to bottom of that column
       newCols[toCol].push(item);
     } else if (from.fromCol === toCol) {
-      // Reorder within same column
-      const adjustedIdx = from.fromIdx < toIdx ? toIdx - 1 : toIdx;
-      newCols[toCol].splice(adjustedIdx, 0, item);
+      const adj = from.fromIdx < toIdx ? toIdx - 1 : toIdx;
+      newCols[toCol].splice(adj, 0, item);
     } else {
-      // Move to different column at specific position
       newCols[toCol].splice(toIdx, 0, item);
     }
 
     setColLists(newCols);
 
-    // Merge back to flat Z-order for saving
+    // Merge back to flat Z-order: row by row across columns
     const maxLen = Math.max(...newCols.map(c => c.length));
     const flat: string[] = [];
     for (let row = 0; row < maxLen; row++) {
@@ -178,17 +178,16 @@ export default function AdminPage() {
       }
     }
     setImages(prev => ({ ...prev, [activeTab]: flat }));
-
     dragInfo.current = null;
     setDragOver(null);
   };
 
-  const onDragEnd = () => {
+  const onColDragEnd = () => {
     dragInfo.current = null;
     setDragOver(null);
   };
 
-  // ── Swap handler ──  // ── Swap handler ──
+  // ── Swap handler ──
   const handleSwapClick = (flatIdx: number) => {
     if (swapSrc === null) {
       // First click — select source
@@ -205,34 +204,7 @@ export default function AdminPage() {
     }
   };
 
-  // ── Move to column ──
-  // Strategy: swap the selected image with the image currently occupying
-  // the nearest slot in the target column. This keeps the total count
-  // the same and doesn't shift anything else.
-  const moveToColumn = (fromIdx: number, targetCol: number) => {
-    const list = [...(images[activeTab] || [])];
-    const currentCol = fromIdx % cols;
-    if (currentCol === targetCol) { setColMenu(null); return; }
 
-    // Find all indices in the target column
-    const targetIndices = list
-      .map((_, i) => i)
-      .filter(i => i % cols === targetCol);
-
-    if (targetIndices.length === 0) { setColMenu(null); return; }
-
-    // Find the closest index in the target column to fromIdx
-    const closestTargetIdx = targetIndices.reduce((best, idx) =>
-      Math.abs(idx - fromIdx) < Math.abs(best - fromIdx) ? idx : best
-    , targetIndices[0]);
-
-    // Simple swap — no shifting, no index math side effects
-    [list[fromIdx], list[closestTargetIdx]] = [list[closestTargetIdx], list[fromIdx]];
-
-    setImages(prev => ({ ...prev, [activeTab]: list }));
-    setColMenu(null);
-    setSwapSrc(null);
-  };
 
   // ── Save order ──
   const handleSaveOrder = async () => {
@@ -498,15 +470,14 @@ export default function AdminPage() {
                 <div
                   key={colIdx}
                   onDragOver={e => onColDragOver(e, colIdx)}
-                  onDrop={e => onDrop(e, colIdx, -1)}
+                  onDrop={e => onColDrop(e, colIdx, -1)}
                   style={{ display: "flex", flexDirection: "column", gap: "6px", minHeight: "120px" }}
                 >
-                  {/* Column header */}
-                  <div style={{ padding: "4px 8px", textAlign: "center", borderRadius: "6px",
-                    background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                    <p style={{ fontSize: "9px", letterSpacing: "0.3em", color: "#444",
+                  <div style={{ padding: "3px 8px", textAlign: "center", borderRadius: "6px",
+                    background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
+                    <p style={{ fontSize: "9px", letterSpacing: "0.3em", color: "#333",
                       textTransform: "uppercase", fontFamily: "var(--font-body)" }}>
-                      Column {colIdx + 1} · {colImgs.length} images
+                      Col {colIdx + 1} · {colImgs.length}
                     </p>
                   </div>
 
@@ -514,22 +485,24 @@ export default function AdminPage() {
                     const isDragging = dragInfo.current?.fromCol === colIdx && dragInfo.current?.fromIdx === itemIdx;
                     const isOver = dragOver?.col === colIdx && dragOver?.idx === itemIdx;
                     const isCover = colIdx === 0 && itemIdx === 0;
-
                     return (
                       <div
                         key={img}
                         draggable
                         onDragStart={() => onItemDragStart(colIdx, itemIdx)}
                         onDragOver={e => onItemDragOver(e, colIdx, itemIdx)}
-                        onDrop={e => onDrop(e, colIdx, itemIdx)}
-                        onDragEnd={onDragEnd}
-                                        className="relative group overflow-hidden rounded-lg"
+                        onDrop={e => onColDrop(e, colIdx, itemIdx)}
+                        onDragEnd={onColDragEnd}
+                        onClick={() => handleSwapClick(colIdx * 10000 + itemIdx)}
+                        onContextMenu={e => { e.preventDefault(); setColMenu({ flatIdx: colIdx * 10000 + itemIdx, x: e.clientX, y: e.clientY }); }}
+                        className="relative group overflow-hidden rounded-lg"
                         style={{
                           cursor: "grab",
-                          opacity: isDragging ? 0.25 : 1,
-                          outline: isOver ? "2px solid var(--accent)" : "2px solid transparent",
+                          opacity: isDragging ? 0.2 : 1,
+                          outline: isOver ? "2px solid var(--accent)" : swapSrc === colIdx * 10000 + itemIdx ? "2px solid var(--accent)" : "2px solid transparent",
                           outlineOffset: "2px",
                           transition: "opacity 0.15s, outline 0.1s",
+                          boxShadow: swapSrc === colIdx * 10000 + itemIdx ? "0 0 0 4px rgba(184,150,106,0.15)" : "none",
                         }}
                       >
                         {isCover && (
@@ -539,52 +512,39 @@ export default function AdminPage() {
                           </div>
                         )}
                         <div className="absolute top-2 right-2 z-10 w-5 h-5 rounded-full flex items-center justify-center text-[9px]"
-                          style={{ background: "rgba(10,10,10,0.85)", color: "#666", fontFamily: "var(--font-body)" }}>
+                          style={{ background: "rgba(10,10,10,0.85)", color: isOver ? "var(--accent)" : "#666", fontFamily: "var(--font-body)" }}>
                           {itemIdx + 1}
                         </div>
                         <img src={`/images/${activeTab}/${img}`} alt="" draggable={false}
                           className="w-full h-auto block pointer-events-none select-none" />
                         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
                           style={{ background: "rgba(10,10,10,0.45)" }}>
-                          <p className="text-[10px] tracking-widest" style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
-                            ⠿ drag
-                          </p>
+                          <p className="text-[10px] tracking-widest" style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>⠿ drag</p>
                         </div>
                       </div>
                     );
                   })}
 
-                  {/* Drop zone at bottom of column */}
                   <div
                     onDragOver={e => onColDragOver(e, colIdx)}
-                    onDrop={e => onDrop(e, colIdx, -1)}
+                    onDrop={e => onColDrop(e, colIdx, -1)}
                     style={{
-                      flex: 1,
-                      minHeight: "60px",
-                      borderRadius: "8px",
+                      flex: 1, minHeight: "60px", borderRadius: "8px",
                       border: dragOver?.col === colIdx && dragOver?.idx === -1
-                        ? "1px dashed var(--accent)"
-                        : "1px dashed rgba(255,255,255,0.06)",
+                        ? "1px dashed var(--accent)" : "1px dashed rgba(255,255,255,0.06)",
                       background: dragOver?.col === colIdx && dragOver?.idx === -1
-                        ? "rgba(184,150,106,0.06)"
-                        : "transparent",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
+                        ? "rgba(184,150,106,0.05)" : "transparent",
+                      display: "flex", alignItems: "center", justifyContent: "center",
                       transition: "border-color 0.15s, background 0.15s",
                     }}
                   >
-                    <p style={{ fontSize: "9px", letterSpacing: "0.3em", color: "rgba(255,255,255,0.08)",
-                      textTransform: "uppercase", fontFamily: "var(--font-body)" }}>
-                      drop here
-                    </p>
+                    <p style={{ fontSize: "9px", letterSpacing: "0.3em", color: "rgba(255,255,255,0.07)",
+                      textTransform: "uppercase", fontFamily: "var(--font-body)" }}>drop here</p>
                   </div>
                 </div>
               ))}
             </div>
           )}
-        </div>
-      )}
 
       {/* ── ABOUT EDITOR VIEW ── */}
       {view === "about" && (
@@ -799,60 +759,7 @@ export default function AdminPage() {
           )}
         </div>
       )}
-      {/* Column move context menu */}
-      {colMenu !== null && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-50"
-            onClick={() => setColMenu(null)}
-          />
-          {/* Menu */}
-          <div
-            className="fixed z-50 rounded-xl overflow-hidden"
-            style={{
-              left: Math.min(colMenu.x, (typeof window !== "undefined" ? window.innerWidth : 1200) - 180),
-              top: Math.min(colMenu.y, (typeof window !== "undefined" ? window.innerHeight : 800) - 160),
-              background: "rgba(18,18,18,0.98)",
-              border: "1px solid rgba(255,255,255,0.1)",
-              backdropFilter: "blur(20px)",
-              minWidth: "160px",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
-            }}
-          >
-            <p
-              className="px-4 py-2 text-[9px] tracking-widest uppercase"
-              style={{ color: "#444", fontFamily: "var(--font-body)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-            >
-              Move to column
-            </p>
-            {Array.from({ length: cols }, (_, i) => {
-              const currentCol = colMenu.flatIdx % cols;
-              const isCurrentCol = currentCol === i;
-              return (
-                <button
-                  key={i}
-                  onClick={() => moveToColumn(colMenu.flatIdx, i)}
-                  disabled={isCurrentCol}
-                  className="w-full px-4 py-3 text-left text-[11px] transition-colors duration-150"
-                  style={{
-                    fontFamily: "var(--font-body)",
-                    color: isCurrentCol ? "#333" : "#c8c0b4",
-                    background: "transparent",
-                    cursor: isCurrentCol ? "default" : "pointer",
-                    display: "block",
-                    borderBottom: i < cols - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
-                  }}
-                  onMouseEnter={e => { if (!isCurrentCol) (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
-                >
-                  {isCurrentCol ? `✓ Column ${i + 1} (current)` : `Column ${i + 1}`}
-                </button>
-              );
-            })}
-          </div>
-        </>
-      )}
+
 
     </main>
   );
