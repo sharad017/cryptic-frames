@@ -53,7 +53,7 @@ export default function AdminPage() {
   const [cols, setCols] = useState(3);
 
   // Swap mode — click first image, click second to swap
-  const [swapSrc, setSwapSrc] = useState<number | null>(null);
+  const [swapSrc, setSwapSrc] = useState<{ col: number; idx: number } | null>(null);
 
   // Column move menu — right-click an image to move it to a specific column
   const [colMenu, setColMenu] = useState<{ flatIdx: number; x: number; y: number } | null>(null);
@@ -188,18 +188,30 @@ export default function AdminPage() {
   };
 
   // ── Swap handler ──
-  const handleSwapClick = (flatIdx: number) => {
+  const handleSwapClick = (colIdx: number, itemIdx: number) => {
     if (swapSrc === null) {
       // First click — select source
-      setSwapSrc(flatIdx);
-    } else if (swapSrc === flatIdx) {
+      setSwapSrc({ col: colIdx, idx: itemIdx });
+    } else if (swapSrc.col === colIdx && swapSrc.idx === itemIdx) {
       // Clicked same image — deselect
       setSwapSrc(null);
     } else {
-      // Second click — do the swap
-      const list = [...(images[activeTab] || [])];
-      [list[swapSrc], list[flatIdx]] = [list[flatIdx], list[swapSrc]];
-      setImages(prev => ({ ...prev, [activeTab]: list }));
+      // Second click — swap the two images in colLists
+      const newCols = colLists.map(c => [...c]);
+      const tmp = newCols[swapSrc.col][swapSrc.idx];
+      newCols[swapSrc.col][swapSrc.idx] = newCols[colIdx][itemIdx];
+      newCols[colIdx][itemIdx] = tmp;
+      setColLists(newCols);
+
+      // Merge back to flat Z-order
+      const maxLen = Math.max(...newCols.map(c => c.length));
+      const flat: string[] = [];
+      for (let row = 0; row < maxLen; row++) {
+        for (let col = 0; col < cols; col++) {
+          if (newCols[col][row]) flat.push(newCols[col][row]);
+        }
+      }
+      setImages(prev => ({ ...prev, [activeTab]: flat }));
       setSwapSrc(null);
     }
   };
@@ -493,16 +505,16 @@ export default function AdminPage() {
                         onDragOver={e => onItemDragOver(e, colIdx, itemIdx)}
                         onDrop={e => onColDrop(e, colIdx, itemIdx)}
                         onDragEnd={onColDragEnd}
-                        onClick={() => handleSwapClick(colIdx * 10000 + itemIdx)}
+                        onClick={() => handleSwapClick(colIdx, itemIdx)}
                         onContextMenu={e => { e.preventDefault(); setColMenu({ flatIdx: colIdx * 10000 + itemIdx, x: e.clientX, y: e.clientY }); }}
                         className="relative group overflow-hidden rounded-lg"
                         style={{
                           cursor: "grab",
                           opacity: isDragging ? 0.2 : 1,
-                          outline: isOver ? "2px solid var(--accent)" : swapSrc === colIdx * 10000 + itemIdx ? "2px solid var(--accent)" : "2px solid transparent",
+                          outline: isOver ? "2px solid var(--accent)" : (swapSrc?.col === colIdx && swapSrc?.idx === itemIdx) ? "2px solid var(--accent)" : "2px solid transparent",
                           outlineOffset: "2px",
                           transition: "opacity 0.15s, outline 0.1s",
-                          boxShadow: swapSrc === colIdx * 10000 + itemIdx ? "0 0 0 4px rgba(184,150,106,0.15)" : "none",
+                          boxShadow: (swapSrc?.col === colIdx && swapSrc?.idx === itemIdx) ? "0 0 0 4px rgba(184,150,106,0.15)" : "none",
                         }}
                       >
                         {isCover && (
