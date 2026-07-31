@@ -53,7 +53,7 @@ export default function AdminPage() {
   const [cols, setCols] = useState(3);
 
   // Swap mode — click first image, click second to swap
-  const [swapSrc, setSwapSrc] = useState<{ col: number; idx: number } | null>(null);
+  const [swapSrc, setSwapSrc] = useState<number | null>(null);
 
   // Column move menu — right-click an image to move it to a specific column
   const [colMenu, setColMenu] = useState<{ flatIdx: number; x: number; y: number } | null>(null);
@@ -188,30 +188,18 @@ export default function AdminPage() {
   };
 
   // ── Swap handler ──
-  const handleSwapClick = (colIdx: number, itemIdx: number) => {
+  const handleSwapClick = (flatIdx: number) => {
     if (swapSrc === null) {
       // First click — select source
-      setSwapSrc({ col: colIdx, idx: itemIdx });
-    } else if (swapSrc.col === colIdx && swapSrc.idx === itemIdx) {
+      setSwapSrc(flatIdx);
+    } else if (swapSrc === flatIdx) {
       // Clicked same image — deselect
       setSwapSrc(null);
     } else {
-      // Second click — swap the two images in colLists
-      const newCols = colLists.map(c => [...c]);
-      const tmp = newCols[swapSrc.col][swapSrc.idx];
-      newCols[swapSrc.col][swapSrc.idx] = newCols[colIdx][itemIdx];
-      newCols[colIdx][itemIdx] = tmp;
-      setColLists(newCols);
-
-      // Merge back to flat Z-order
-      const maxLen = Math.max(...newCols.map(c => c.length));
-      const flat: string[] = [];
-      for (let row = 0; row < maxLen; row++) {
-        for (let col = 0; col < cols; col++) {
-          if (newCols[col][row]) flat.push(newCols[col][row]);
-        }
-      }
-      setImages(prev => ({ ...prev, [activeTab]: flat }));
+      // Second click — do the swap
+      const list = [...(images[activeTab] || [])];
+      [list[swapSrc], list[flatIdx]] = [list[flatIdx], list[swapSrc]];
+      setImages(prev => ({ ...prev, [activeTab]: list }));
       setSwapSrc(null);
     }
   };
@@ -506,7 +494,7 @@ export default function AdminPage() {
                         onDrop={e => onColDrop(e, colIdx, itemIdx)}
                         onDragEnd={onColDragEnd}
                         onClick={() => handleSwapClick(colIdx, itemIdx)}
-                        onContextMenu={e => { e.preventDefault(); setColMenu({ flatIdx: colIdx * 10000 + itemIdx, x: e.clientX, y: e.clientY }); }}
+                        onContextMenu={e => { e.preventDefault(); setColMenu({ flatIdx: colIdx, x: e.clientX, y: e.clientY }); }}
                         className="relative group overflow-hidden rounded-lg"
                         style={{
                           cursor: "grab",
@@ -557,6 +545,9 @@ export default function AdminPage() {
               ))}
             </div>
           )}
+
+        </div>
+      )}
 
       {/* ── ABOUT EDITOR VIEW ── */}
       {view === "about" && (
@@ -771,7 +762,13 @@ export default function AdminPage() {
           )}
         </div>
       )}
+        </div>
+        </div>
+      )}
 
+
+      </div>
+      </div>
 
     </main>
   );
