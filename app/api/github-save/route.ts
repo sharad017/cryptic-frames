@@ -112,6 +112,16 @@ export async function POST(request: NextRequest) {
       return Response.json({ success: true });
     }
 
+    if (type === "testimonials") {
+      const { data } = body;
+      await commitFile(
+        "public/images/testimonials.json",
+        JSON.stringify(data, null, 2),
+        "admin: update testimonials"
+      );
+      return Response.json({ success: true });
+    }
+
     return Response.json({ error: "Unknown type" }, { status: 400 });
   } catch (err) {
     return Response.json({ error: String(err) }, { status: 500 });

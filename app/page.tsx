@@ -9,6 +9,7 @@ import HeroSlideshow from "./components/HeroSlideshow";
 import CategoryGrid from "./components/CategoryGrid";
 import HeroText from "./components/HeroText";
 import Footer from "./components/Footer";
+import TestimonialsSection, { Testimonial } from "./components/TestimonialsSection";
 
 const CATEGORIES = [
   { slug: "concert",  label: "Concert",  desc: "The raw energy of live music" },
@@ -40,7 +41,14 @@ function getImages(folder: string): string[] {
   return ordered;
 }
 
+function getTestimonials(): Testimonial[] {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "public/images/testimonials.json"), "utf-8"));
+  } catch { return []; }
+}
+
 export default function Home() {
+  const testimonials = getTestimonials();
   const featuredImgs = getImages("featured").map((f) => `/images/featured/${f}`);
   const heroImages = featuredImgs.length > 0 ? featuredImgs.slice(0, 6) : ["/images/hero.jpg"];
 
@@ -108,6 +116,8 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      <TestimonialsSection testimonials={testimonials} />
 
       {/* ── CONTACT ── */}
       <section id="contact" className="px-5 md:px-12 py-20 md:py-28" style={{ borderTop: "1px solid var(--border)" }}>
