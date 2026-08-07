@@ -2,8 +2,36 @@
   {
     "id": "0d2b6413-dc7c-46cc-a571-8996a2d1b182",
     "name": "Rajat",
-    "context": "POrtrait shoot",
-    "quote": "In promotion and advertising, a testimonial or show consists of a person's written or spoken statement extolling the virtue of a product. The term \"testimonial\" most commonly applies to the sales-pitches attributed to ordinary citizens, whereas the word \"endorsement\" usually applies to pitches by celebrities. Testimonials can be part of communal marketing.",
-    "published": false
+    "context": "Portrait shoot",
+    "quote": "This product exceeded my expectations. It is simple to use and very reliable for my daily tasks.",
+    "published": true
+  },
+  {
+    "id": "048b0af8-1bc1-4ff7-8e25-17f2c120cfde",
+    "name": "Aryan",
+    "context": "Wildlife Shoot",
+    "quote": "The service was fast, friendly, and excellent. I would definitely recommend it to anyone looking for quality",
+    "published": true
+  },
+  {
+    "id": "68ddf4a8-9fc2-4d88-b3e5-fe9769127464",
+    "name": "Gitansh",
+    "context": "Astro Shoot",
+    "quote": "This tool helped me save time and made my work much easier from day one",
+    "published": true
+  },
+  {
+    "id": "15df17db-a177-4192-aecd-b1a169a0b96d",
+    "name": "Ishkant",
+    "context": "Flower Shoot",
+    "quote": "I saw a huge improvement after trying this service. It really works just like they promised",
+    "published": true
+  },
+  {
+    "id": "81d8f61e-80a5-4498-ae32-1bcb101cc73e",
+    "name": "Sharad",
+    "context": "Concert Shoot",
+    "quote": "I appreciate how patient and supportive the team was. They made the whole process easy and clear",
+    "published": true
   }
 ]
