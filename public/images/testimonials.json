@@ -33,5 +33,19 @@
     "context": "Concert Shoot",
     "quote": "I appreciate how patient and supportive the team was. They made the whole process easy and clear",
     "published": true
+  },
+  {
+    "id": "9257d677-115f-4286-a0b8-8a2dddb16404",
+    "name": "Priyansh",
+    "context": "Travel Shoot",
+    "quote": "Thanks to this program, I gained more confidence and improved my core skills faster than expected",
+    "published": true
+  },
+  {
+    "id": "a431df50-3634-4987-add5-a5e3502e874c",
+    "name": "Raghav",
+    "context": "Fashion Shoot",
+    "quote": "The guidance I received was clear and easy to understand. It made a difficult project stress-free",
+    "published": true
   }
 ]
