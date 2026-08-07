@@ -21,7 +21,9 @@
   },
   "portrait/_DSC3749.jpg": {
     "desktop": "50% 30%",
-    "mobile": "47% 4%"
+    "mobile": "47% 4%",
+    "mobileZoom": 1,
+    "desktopZoom": 1
   },
   "event/DSC00463.jpg": {
     "desktop": "2% 46%",
