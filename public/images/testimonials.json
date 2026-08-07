@@ -4,48 +4,48 @@
     "name": "Rajat",
     "context": "Portrait shoot",
     "quote": "This product exceeded my expectations. It is simple to use and very reliable for my daily tasks.",
-    "published": true
+    "published": false
   },
   {
     "id": "048b0af8-1bc1-4ff7-8e25-17f2c120cfde",
     "name": "Aryan",
     "context": "Wildlife Shoot",
     "quote": "The service was fast, friendly, and excellent. I would definitely recommend it to anyone looking for quality",
-    "published": true
+    "published": false
   },
   {
     "id": "68ddf4a8-9fc2-4d88-b3e5-fe9769127464",
     "name": "Gitansh",
     "context": "Astro Shoot",
     "quote": "This tool helped me save time and made my work much easier from day one",
-    "published": true
+    "published": false
   },
   {
     "id": "15df17db-a177-4192-aecd-b1a169a0b96d",
     "name": "Ishkant",
     "context": "Flower Shoot",
     "quote": "I saw a huge improvement after trying this service. It really works just like they promised",
-    "published": true
+    "published": false
   },
   {
     "id": "81d8f61e-80a5-4498-ae32-1bcb101cc73e",
     "name": "Sharad",
     "context": "Concert Shoot",
     "quote": "I appreciate how patient and supportive the team was. They made the whole process easy and clear",
-    "published": true
+    "published": false
   },
   {
     "id": "9257d677-115f-4286-a0b8-8a2dddb16404",
     "name": "Priyansh",
     "context": "Travel Shoot",
     "quote": "Thanks to this program, I gained more confidence and improved my core skills faster than expected",
-    "published": true
+    "published": false
   },
   {
     "id": "a431df50-3634-4987-add5-a5e3502e874c",
     "name": "Raghav",
     "context": "Fashion Shoot",
     "quote": "The guidance I received was clear and easy to understand. It made a difficult project stress-free",
-    "published": true
+    "published": false
   }
 ]
