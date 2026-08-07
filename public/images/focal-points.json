@@ -16,8 +16,10 @@
     "mobile": "55% 26%"
   },
   "concert/DSC02343.webp": {
-    "desktop": "45% 64%",
-    "mobile": "45% 57%"
+    "desktop": "45% 58%",
+    "mobile": "45% 57%",
+    "mobileZoom": 1,
+    "desktopZoom": 1
   },
   "portrait/_DSC3749.jpg": {
     "desktop": "50% 30%",
